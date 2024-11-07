@@ -34,7 +34,7 @@ In fredver.ioutils package there is the implementation of the classes used for m
 headertitle1:headerbody1;headertitle2:headerbody2;headertitleN:headerbodyN|rawdata
 ```
 There can be as many headers as you want, but they have to each have their title match one of the titles' names specified by the ```RequestType``` enum. No field can ever not have a value, the default "non-value" is "null", as defined in `Constants.NULL_VALUE` <br>
-To have a formal definition of what is a valid message, it has to match this regex: `"^([^:;]+:[^:;]+(?:;[^:;]+:[^:;]+)*)\\|(.+)$"`
+To have a formal definition of what is a valid message, it has to match this regex: `^([^:;]+:[^:;]+(?:;[^:;]+:[^:;]+)*)\\|(.+)$`
 
 There are four static Strings defined in `fredver.ioutils.Message`, which are Pre-compiled messages you can use to signal connection termination:
 
