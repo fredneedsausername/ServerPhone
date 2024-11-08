@@ -5,6 +5,10 @@
 >[!WARNING]
 >Bug if the socket buffer size is less than the metadata dimensions
 
+**TODO CHANGE ALL REFERENCES TO CODE WITH ACTUAL REFERENCES**
+**TODO CHANGE RequestType to HeaderTitle in all references in this file**
+
+
 # ServerPhone
 _Believe it or not, this is the third time i delete this repo because of configurations issues, which took me a day to sort out.<br>
 I finally managed to publish my work here, i will keep you posted here._
@@ -37,24 +41,21 @@ I don't even have to think about implementing a defense against DDoS attacks, an
 <br>
 
 ## Custom protocol
-In fredver.ioutils package there is the implementation of the classes used for my own protocol.
+In [fredver.ioutils](ServerTelefono/src/fredver/ioutils) package there is the implementation of the classes used for my own protocol.
 ### Structure 
 ```
 headertitle1:headerbody1;headertitle2:headerbody2;headertitleN:headerbodyN|rawdata
 ```
-There can be as many headers as you want, but they have to each have their title match one of the titles' names specified by the `RequestType` enum. No field can ever not have a value, the default "non-value" is "null", as defined in `Constants.NULL_VALUE` <br>
+There can be as many headers as you want, but they have to each have their title match one of the titles' names specified by the [`HeaderTitle`](ServerTelefono/src/fredver/ioutils/HeaderTitle.java) enum. No field can ever not have a value, the default "non-value" is "null", as defined in [`Constants.NULL_VALUE`](ServerTelefono/src/fredver/constants/Constants.java) <br>
 To have a formal definition of what is a valid message, it has to match this regex: 
 ```
 ^([^:;]+:[^:;]+(?:;[^:;]+:[^:;]+)*)\\|(.+)$
 ```
-There are four static Strings defined in `fredver.ioutils.Message`, which are Pre-compiled messages you can use to signal connection termination:
+There are two static Strings defined in [`fredver.ioutils.Message`](ServerTelefono/src/fredver/ioutils/Message.java), which are Pre-compiled messages you can use to signal connection termination:
 
-<br> **TODO REMOVE THE < br > AT THE START OF THIS LINE BUT FIRST UPDATE THIS TABLE WHICH IS OUTDATED**
 | Pre-compiled message String name | Message  |
 | ------------- | ------------- |
 | clientToServerDisconnectionMessage  | to be sent by client to server to signal they request to terminate the connection  |
-| serverApprovedClientDisconnectionMessage  | to be sent by the server to signal if it ready to cut off connection as requested by client  |
-| serverDeniedClientDisconnectionMessage | to be sent by the server to signal if it ready to cut off connection as requested by client |
 | serverToClientWantsToShutOffMessage | to be sent by the server to the client to signal it wants to shut off, so to not send data anymore |
 
 NOT AUTHORIZED if not authorized to perform the operation **TODO PUT IN NEW TABLE YOU HAVE TO CREATE HERE WITH ALL THE HEADER TITLES**
@@ -89,7 +90,7 @@ The console can run in offline mode, but has to be specified at startup. In this
 ## Client
 The client is able to:
 - to connect to the server specifying its ip address and port, with a functionality to save those info for later reuse, and change them to a different one.
-- access the console if it is an admin, otherwise a specific menu based on its authorization level. see [User management](#user-management) section
+- access the console if it is an admin, otherwise a specific menu based on its authorization level. See [`fredver.clientserver.PermissionLevel`](ServerTelefono/src/fredver/clientserver/PermissionLevel.java) enum.
 - change or set up a new tls certificate of the server manually.
 - based on its certification level:
   - navigate through the folders 
@@ -104,7 +105,7 @@ The client is able to:
 
 ## User management
 **TODO**
-There may be multiple users, each having their dedicated folder under the users folder. Each user has a password and username, which they have to use to connect to the server. Each user has their access level, from the defined ones in `fredver.clientserver.PermissionLevel` enum. Each user can only interact with the contents of its folder, unless it's the admin. 
+There may be multiple users, each having their dedicated folder under the users folder. Each user has a password and username, which they have to use to connect to the server. Each user has their access level, from the defined ones in [`fredver.clientserver.PermissionLevel`](ServerTelefono/src/fredver/clientserver/PermissionLevel.java) enum. Each user can only interact with the contents of its folder, unless it's the admin. 
 ///////
 per il login e password, il Server chiede al client una password e un username, poi se è giusta la password legata all'username mette il socket in una map con una classe per identificare le informazioni della sessione, che quando termina verrà rimossa dalla map.
 ///////
