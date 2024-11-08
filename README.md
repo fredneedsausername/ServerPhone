@@ -1,3 +1,7 @@
+
+> [!WARNING]
+> Documentation is only partly completed, there might be changes to existing parts and surely new things will be added, especially those marked with **TODO**
+
 # ServerPhone
 _Believe it or not, this is the third time i delete this repo because of configurations issues, which took me a day to sort out.<br>
 I finally managed to publish my work here, i will keep you posted here._
