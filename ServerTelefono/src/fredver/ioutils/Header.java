@@ -11,7 +11,7 @@ public class Header {
 		if(requestType == null) 
 			throw new CheckedIllegalArgumentException("Request type of value null when initializing Header class instance");
 		if(value == "")
-			throw new CheckedIllegalArgumentException("Request type of empty value when initializing Header class instance");
+			throw new CheckedIllegalArgumentException("Content of empty value when initializing Header class instance");
 		this.value = value;
 		this.requestType = requestType;
 	}

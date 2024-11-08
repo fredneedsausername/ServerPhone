@@ -40,7 +40,7 @@ public class Message {
 		try {
 			clientToServerDisconnectionMessage = 
 					new Message(new Header[] {
-							new Header(RequestType.CLIENT_DISCONNECTS, "null")
+							new Header(RequestType.CLIENT_DISCONNECTS, Constants.NULL_VALUE)
 					}, null).toString();
 			
 			serverApprovedClientDisconnectionMessage =
@@ -55,7 +55,7 @@ public class Message {
 			
 			serverToClientWantsToShutOffMessage = 
 					new Message(new Header[] {
-							new Header(RequestType.SERVER_SHUTS_OFF, "null")
+							new Header(RequestType.SERVER_SHUTS_OFF, Constants.NULL_VALUE)
 					}, null).toString();
 		} catch (CheckedIllegalArgumentException e) { }
 	}
@@ -122,7 +122,7 @@ public class Message {
 		}
 		else {
 			ret
-			.append("null" + Character.toString(Constants.HEADER_AND_HEADER_DESCRIPTION_SEPARATOR) + "null");
+			.append(Constants.NULL_VALUE + Character.toString(Constants.HEADER_AND_HEADER_DESCRIPTION_SEPARATOR) + Constants.NULL_VALUE);
 		}
 		
 		if((content != null) && (content != "")) {			
@@ -132,7 +132,7 @@ public class Message {
 		} else {
 			ret
 			.append(Constants.HEADER_AND_MESSAGE_SEPARATOR)
-			.append("null");
+			.append(Constants.NULL_VALUE);
 		}
 		
 		return ret.toString();
