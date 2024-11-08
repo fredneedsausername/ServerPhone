@@ -90,6 +90,7 @@ different permissions
 
 ## Concurrency
 **TODO**
+There shouldn't be many issues with concurrency because users each use their own folder, but only for admins, which can see all folders and modify, create, and destroy them
 ///////
 the first release will be with only one connection at a time, with plans to expand it to multiple concurrent connections in the future.
 ///////
