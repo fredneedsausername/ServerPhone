@@ -5,9 +5,6 @@
 >[!WARNING]
 >Bug if the socket buffer size is less than the metadata dimensions
 
-**TODO** substitute transmission data stealing attack with eavesdropping
-
-
 # ServerPhone
 _Believe it or not, this is the third time i delete this repo because of configurations issues, which took me a day to sort out.<br>
 I finally managed to publish my work here, i will keep you posted here._
@@ -60,6 +57,7 @@ There are four static Strings defined in `fredver.ioutils.Message`, which are Pr
 | serverDeniedClientDisconnectionMessage | to be sent by the server to signal if it ready to cut off connection as requested by client |
 | serverToClientWantsToShutOffMessage | to be sent by the server to the client to signal it wants to shut off, so to not send data anymore |
 
+NOT AUTHORIZED if not authorized to perform the operation **TODO PUT IN NEW TABLE YOU HAVE TO CREATE HERE WITH ALL THE HEADER TITLES**
 You can get and use these values with the respective methods that start with `get`, and terminate with the name of the pre-compiled String.
 
 ### Closing connections
@@ -88,6 +86,21 @@ The console can run in offline mode, but has to be specified at startup. In this
 <br>
 <br>
 
+## Client
+The client is able to:
+- to connect to the server specifying its ip address and port, with a functionality to save those info for later reuse, and change them to a different one.
+- access the console if it is an admin, otherwise a specific menu based on its authorization level. see [User management](#user-management) section
+- change or set up a new tls certificate of the server manually.
+- based on its certification level:
+  - navigate through the folders 
+  - get files and directories
+  - upload files and directories
+  - create files and directories
+
+
+<br>
+<br>
+<br>
 
 ## User management
 **TODO**
