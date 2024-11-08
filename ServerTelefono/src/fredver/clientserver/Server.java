@@ -6,9 +6,11 @@ import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
 
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLSocketFactory;
@@ -24,7 +26,7 @@ public class Server {
 	private static boolean isServerStarted = false;
 	private static SSLServerSocket serverSocket;
 	private static boolean offlineMode = false;
-	private static Map<SSLSocket, PermissionLevel> connections = new HashMap<>();
+	private static Set<SSLSocket> connections = new HashSet<>();
 	
 	public static void main(String[] args) {
 		 try {
@@ -277,7 +279,8 @@ public class Server {
 	}
 	
 	private static void turnOffServer() throws IOException {
-		for(SSLSocket s : connections.keySet()) {
+		for(SSLSocket s : connections) {
+			ASPETTA FINISCA DI PRENDERE TUTTI I DATI
 			s.close();
 		}
 		

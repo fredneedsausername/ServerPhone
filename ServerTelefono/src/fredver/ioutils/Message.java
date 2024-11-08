@@ -14,22 +14,10 @@ public class Message {
 	
 	private static String clientToServerDisconnectionMessage;// to be sent by client to server to signal they request to terminate the connection
 	
-	private static String serverApprovedClientDisconnectionMessage; // to be sent by the server to signal if it ready to cut off connection as requested by client
-	
-	private static String serverDeniedClientDisconnectionMessage; // to be sent by the server to signal if it ready to cut off connection as requested by client
-	
 	private static String serverToClientWantsToShutOffMessage;// to be sent by the server to the client to signal it wants to shut off, so to not send data anymore
 	
 	public static String getClientToServerDisconnectionMessage() {
 		return clientToServerDisconnectionMessage;
-	}
-	
-	public static String getServerApprovedClientDisconnectionMessage() {
-		return serverApprovedClientDisconnectionMessage;
-	}
-
-	public static String getServerDeniedClientDisconnectionMessage() {
-		return serverDeniedClientDisconnectionMessage;
 	}
 
 	public static String getServerToClientWantsToShutOffMessage() {
@@ -41,16 +29,6 @@ public class Message {
 			clientToServerDisconnectionMessage = 
 					new Message(new Header[] {
 							new Header(RequestType.CLIENT_DISCONNECTS, Constants.NULL_VALUE)
-					}, null).toString();
-			
-			serverApprovedClientDisconnectionMessage =
-					new Message(new Header[] {
-							new Header(RequestType.CLIENT_DISCONNECTS, Constants.GRANTED)
-					}, null).toString();
-			
-			serverDeniedClientDisconnectionMessage =
-					new Message(new Header[] {
-							new Header(RequestType.CLIENT_DISCONNECTS, Constants.GRANTED)
 					}, null).toString();
 			
 			serverToClientWantsToShutOffMessage = 
