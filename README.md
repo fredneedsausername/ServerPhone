@@ -2,13 +2,10 @@
 > [!WARNING]
 > Documentation is only partly completed, there might be changes to existing parts and surely new things will be added, especially those marked with **TODO**
 
-
-**Bug if the socket buffer size is less than the metadata information dimensions**
-
-`NOT_SUFFICIENT_STORAGE`**TODO THINK OF WHAT HAPPENS IF THERE IS NOT ENOUGH STORAGE IN THE SERVER TO STORE THE FILES: WILL IT continue accepting the input? What will it do with the rest of the received input? will it throw it away? what will it do with the file it started writing in its memory? ALSO MEMORY COULD BE SUFFICIENT AT THE START OF THE REQUEST BUT COULD NOT BECOME SUFFICIENT AS THE DATA IS SENT, SO YOU HAVE TO SEND A NOT_SUFFICIENT_STORAGE MESSAGE IN THAT SITUATION, TOO, AND ELIMINATE THE FILES THAT WERE GENERATING TODO THINK OF WHAT HAPPENS IF THERE IS NOT ENOUGH STORAGE IN THE SERVER TO STORE THE FILES: WILL IT continue accepting the input? What will it do with the rest of the received input? will it throw it away? what will it do with the file it started writing in its memory?**
-
-
-**TODO UPDATE HEADER_BODY_NEGATED WITH HEADER_BODY_REFUSED**
+**TODO THINK OF WHAT HAPPENS IF THERE IS NOT ENOUGH STORAGE IN THE SERVER TO STORE THE FILES: WILL IT continue accepting the input? What will it do with the rest of the received input? will it throw it away? what will it do with the file it started writing in its memory? ALSO MEMORY COULD BE SUFFICIENT AT THE START OF THE REQUEST BUT COULD NOT BECOME SUFFICIENT AS THE DATA IS SENT, SO YOU HAVE TO SEND A NOT_SUFFICIENT_STORAGE MESSAGE IN THAT SITUATION, TOO, AND ELIMINATE THE FILES THAT WERE GENERATING TODO THINK OF WHAT HAPPENS IF THERE IS NOT ENOUGH STORAGE IN THE SERVER TO STORE THE FILES: WILL IT continue accepting the input? What will it do with the rest of the received input? will it throw it away? what will it do with the file it started writing in its memory?**
+<br>
+**TODO ELIMINATE HEADER_BODY_REFUSED FROM DOCUMENTATION, SINCE NOW THE SERVER PROVIDES WITH AN EXPLANATION FOR EVERY "REFUSED"**
+**TODO ELIMINATE REFERENCES TO NOT_AUTHORIZED, NOW IT IS HEADER_BODY_NOT_AUTHORIZED IN HEADER CLASS**
 
 # ServerPhone
 _Believe it or not, this is the third time i delete this repo because of configurations issues, which took me a day to sort out.<br>
@@ -67,28 +64,26 @@ There can be only a header, and it has to have its their title match one of the 
 Here is a comprehensive table with all possible values header titles values, as defined in [`HeaderTitle`](ServerTelefono/src/fredver/ioutils/HeaderTitle.java), and how they are used based on if the server or client sends it.
 <br> **TODO UPDATE the table removing NOT_AUTHORIZED REFERENCES and updating and completing** 
 **structural update to the whole header thing. removal of not_sufficient_storage, it will be put with header_body_granted and header and header_body_refused**<br>
+There can be various answers in the body, they are all in [fredver.ioutils.Header](ServerTelefono/src/fredver/ioutils/Header.java) and are called `HEADER_BODY_*` where * can be anything, apart from [[`NULL_VALUE`](ServerTelefono/src/fredver/constants/Constants.java), in [fredver.constants.NULL_VALUE](ServerTelefono/src/fredver/constants/Constants.java),
 
-|Header title|If client sends it|if server sends it|
-|:---:|:---:|:---:|
-|---|`LIST_FILES_AND_DIRECTORIES`|---|
-|Header title|||
-|Header body|||
-|Raw data|||
+
+|------|If client sends it|if server sends it|
+|:---:|:--- |:--- |
+||**`LIST_FILES_AND_DIRECTORIES`**|**`LIST_FILES_AND_DIRECTORIES`**|
+|Header body:|the directory name to list the files of|It is a response from this same request from the client.<br>Possible values:<br>-`HEADER_BODY_GRANTED`<br>-`HEADER_BODY_NOT_ENOUGH_STORAGE`<br>-`HEADER_BODY_NOT_AUTHORIZED`<br>-`NON_EXISTENT_FOLDER`|
+|Raw data:|if granted:<br>-`HEADER_BODY_GRANTED`<br><br>else:<br>-`HEADER_BODY_NOT_ENOUGH_STORAGE`<br>-`HEADER_BODY_NOT_AUTHORIZED`<br>-`HEADER_BODY_NON_EXISTENT_FOLDER`|if granted:<br>-The names of the files and directories, separated by [`Constants.FILENAME_AND_FILENAME_SEPARATOR`](ServerTelefono/src/fredver/constants/Constants.java)<br><br>else:<br>-`NULL_VALUE`|
 |---|---|---|
-||`GET_FILE_OR_FOLDER`||
-|Header title|||
-|Header body|||
-|Raw data|||
+||**`GET_FILE_OR_FOLDER`**|**`GET_FILE_OR_FOLDER`**|
+|Header body:|||
+|Raw data:|||
 |---|---|---|
-||`PUBLISH_FILE_OR_FOLDER`||
-|Header title|||
-|Header body|||
-|Raw data|||
+||**`PUBLISH_FILE_OR_FOLDER`**|**`PUBLISH_FILE_OR_FOLDER`**|
+|Header body:|||
+|Raw data:|||
 |---|---|---|
-||`NEW_TLS_CERTIFICATE`||
-|Header title|||
-|Header body|||
-|Raw data|||
+||**`NEW_TLS_CERTIFICATE`**|**`NEW_TLS_CERTIFICATE`**|
+|Header body:|||
+|Raw data:|||
 
 **TODO THINK OF WHAT HAPPENS IF THERE IS NOT ENOUGH STORAGE IN THE SERVER TO STORE THE FILES: WILL IT continue accepting the input? What will it do with the rest of the received input? will it throw it away? what will it do with the file it started writing in its memory?**|**TODO THINK OF WHAT HAPPENS IF THERE IS NOT ENOUGH STORAGE IN THE SERVER TO STORE THE FILES: WILL IT continue accepting the input? What will it do with the rest of the received input? will it throw it away? what will it do with the file it started writing in its memory?**|
 
@@ -132,7 +127,7 @@ The client is able to:
 
 ## User management
 **TODO**
-There may be multiple users, each having their dedicated folder under the users folder. Each user has a password and username, which they have to use to connect to the server. Each user has their access level, from the defined ones in [`fredver.clientserver.PermissionLevel`](ServerTelefono/src/fredver/clientserver/PermissionLevel.java) enum. Each user can only interact with the contents of its user folder, unless it's the admin.<br>
+There may be multiple users, each having their dedicated folder under the users folder. Each user has a password and username, which they have to use to connect to the server. Each user has their access level, from the defined ones in [fredver.clientserver.PermissionLevel](ServerTelefono/src/fredver/clientserver/PermissionLevel.java) enum. Each user can only interact with the contents of its user folder, unless it's the admin.<br>
 The admin can set a limit, which is ***highly recommended***, of how much storage a user has allocated to himself (his folder). If this limit is exceeded when creating or uploading new files or folders, then the operation is cancelled, and the message with the header title [`NOT_SUFFICIENT_STORAGE`](ServerTelefono/src/fredver/ioutils/HeaderTitle.java) is sent to the server. **TODO IMPLEMENT THIS ----------------------------** **TODO NOT_SUFFICIENT_STORAGE NOT USED ANYMORE**
 
 <br>
