@@ -10,7 +10,9 @@
 
 # ServerPhone
 _Believe it or not, this is the third time i delete this repo because of configurations issues, which took me a day to sort out.<br>
-I finally managed to publish my work here, i will keep you posted here._
+I finally managed to publish my work here, i will keep you posted here._<br>
+<br>
+This project supports full JavaDoc documentation, so feel free to consult it.
 
 ## Purpose
 This client/server application is a media server and a passion project, which aims to repurpose an old phone to act as a cloud (i know it's not technically a cloud because it's not distributed) for me and also, in future, if concurrency is added, to act as a NAS for me and my father. Not that we need it, i just think it's cool to have a NAS i myself built from scratch (not from scratch like extracted the silica but you're getting the point).
