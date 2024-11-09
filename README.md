@@ -5,9 +5,7 @@
 >[!WARNING]
 >Bug if the socket buffer size is less than the metadata dimensions
 
-**TODO CHANGE ALL REFERENCES TO CODE WITH ACTUAL REFERENCES**
-**TODO CHANGE RequestType to HeaderTitle in all references in this file**
-
+**TODO** There is to consider also that it might be necessary to implement validation of all incoming data to prevent attacks like buffer overflow or injection attacks, always with the objective of protecting against eavesdropping attacks. This is also the issue that arises if the data sent is bigger than what the server can accept<br>
 
 # ServerPhone
 _Believe it or not, this is the third time i delete this repo because of configurations issues, which took me a day to sort out.<br>
@@ -25,11 +23,6 @@ I use `SSLSocket` to ensure a secure communication, the server using a custom ce
 The `SSLSocket` uses **TODO** encryption details<br>
 <br>
 Certificates are generated using **TODO** technology<br>
-<br>
-I use **TODO** technology to protect from replay attacks<br>
-<br>
-**TODO** <br>
-There is to consider also that it might be necessary to implement validation of all incoming data to prevent attacks like buffer overflow or injection attacks, always with the objective of protecting against eavesdropping attacks.<bt>
 <br>
 I don't even have to think about implementing a defense against DDoS attacks, and that is mainly for these reasons:
   - It might require technologies that are too complicated to be studied and implemented, but i wouldn't know because i didn't study them;
@@ -53,6 +46,7 @@ To have a formal definition of what is a valid message, it has to match this reg
 ```
 There are two static Strings defined in [`fredver.ioutils.Message`](ServerTelefono/src/fredver/ioutils/Message.java), which are Pre-compiled messages you can use to signal connection termination:
 
+**TODO UPDATE THE TABLE**
 | Pre-compiled message String name | Message  |
 | ------------- | ------------- |
 | clientToServerDisconnectionMessage  | to be sent by client to server to signal they request to terminate the connection  |
@@ -62,7 +56,7 @@ NOT AUTHORIZED if not authorized to perform the operation **TODO PUT IN NEW TABL
 You can get and use these values with the respective methods that start with `get`, and terminate with the name of the pre-compiled String.
 
 ### Closing connections
-If the client or server wants to close the connection with the other, it sends a message to the other saying that it wants to close connection, it will then stop sending information, and the other will take this connection closing information and process it this way: it will send a message to say that all data has finished sending **TODO IMPLEMENT THIS THEN UPDATE THE TABLE IN THE STRUCTURE SUB-SECTION OF CUSTOM PROTOCOL TAKING THE DATA FROM fredver.ioutils.Message** and then will not send anything anymore, so that when all the data will be finished sending that will be the last message sent and it will be read by the one who wanted to close the connection, which will know the sending of the last data from both parts has been done, so it can finally close the connection. The other (not the one who started the connection termination, but the other one) will ***NOT*** close the connection before receiving that last message, so that it all ends gracefully.
+If the client or server wants to close the connection with the other, it sends a message with header title [`WANTS_TO_CLOSE_CONNECTION`](ServerTelefono/src/fredver/ioutils/HeaderTitle.java) to the other, it will then stop sending information **TODO POSSIBLE BUG, WHAT HAPPENS IF IT CONTINUES SENDING INFORMATION**, and the other will take this connection closing information and process it this way: it will send a message with header title [`WILL_SEND_NO_MORE_DATA`](ServerTelefono/src/fredver/ioutils/HeaderTitle.java) to say that all data has finished sending **TODO UPDATE THE TABLE IN THE STRUCTURE SUB-SECTION OF CUSTOM PROTOCOL TAKING THE DATA FROM fredver.ioutils.HeaderTitle** and then will not send anything anymore **TODO POTENTIAL BUG WHAT HAPPENS IF IT CONTINUES SENDING INFORMATION**, so that when all the data will be finished sending that will be the last message sent and it will be read by the one who wanted to close the connection, which will know the sending of the last data from both parts has been done, so it can finally close the connection. The other (not the one who started the connection termination, but the other one) will ***NOT*** close the connection before receiving that last message **TODO WHAT HAPPENS IF IT DOES, POTENTIAL BUG**, so that it all ends gracefully.
 
 
 <br>
@@ -77,6 +71,7 @@ The server through the console can be able to:
   - Navigate through the folders and manage them
   - Manage the active connections
   - Benchmark and get the specs of the machine the server is running on
+  - Change or set up a new tls certificate of the server manually. **TODO: IMPLEMENT**
 <br>
 The console can be able to be accessed remotely, you just have to be logged in as administrator.<br>
 The console can run in offline mode, but has to be specified at startup. In this mode you can manage files, users, and benchmark and get the specs of the machine the server is running on.
@@ -91,7 +86,7 @@ The console can run in offline mode, but has to be specified at startup. In this
 The client is able to:
 - to connect to the server specifying its ip address and port, with a functionality to save those info for later reuse, and change them to a different one.
 - access the console if it is an admin, otherwise a specific menu based on its authorization level. See [`fredver.clientserver.PermissionLevel`](ServerTelefono/src/fredver/clientserver/PermissionLevel.java) enum.
-- change or set up a new tls certificate of the server manually.
+- change or set up a new tls certificate of the server and get it. **TODO: FIGURE HOW THE HELL TO DO THIS**
 - based on its certification level:
   - navigate through the folders 
   - get files and directories
@@ -105,13 +100,8 @@ The client is able to:
 
 ## User management
 **TODO**
-There may be multiple users, each having their dedicated folder under the users folder. Each user has a password and username, which they have to use to connect to the server. Each user has their access level, from the defined ones in [`fredver.clientserver.PermissionLevel`](ServerTelefono/src/fredver/clientserver/PermissionLevel.java) enum. Each user can only interact with the contents of its folder, unless it's the admin. 
-///////
-per il login e password, il Server chiede al client una password e un username, poi se è giusta la password legata all'username mette il socket in una map con una classe per identificare le informazioni della sessione, che quando termina verrà rimossa dalla map.
-///////
-different permissions
-///////
-
+There may be multiple users, each having their dedicated folder under the users folder. Each user has a password and username, which they have to use to connect to the server. Each user has their access level, from the defined ones in [`fredver.clientserver.PermissionLevel`](ServerTelefono/src/fredver/clientserver/PermissionLevel.java) enum. Each user can only interact with the contents of its user folder, unless it's the admin.<br>
+The admin can set a limit, which is ***highly recommended***, of how much storage a user has allocated to himself (his folder). If this limit is exceeded when creating or uploading new files or folders, then the operation is cancelled, and the message with the header title [`NOT_SUFFICIENT_STORAGE`](ServerTelefono/src/fredver/ioutils/HeaderTitle.java) is sent to the server.
 
 <br>
 <br>
@@ -119,13 +109,13 @@ different permissions
 
 
 ## Concurrency
-**TODO**
 >[!CAUTION]
 >**TODO** Ensure a connection never stays open when it should be closed, otherwise you have to restart the server.
 >Just in case there is a bug, always keep at least two users with the maximum permissions if you plan on using the server remotely, since if one connection, for some reason, is not closed properly, at least with the other one you can restart the server and not lose >access.
 
-Only one client can connect to the server with an user, so only one instance of the same user can be connected to the server at the same time. If more try to connect the server simply refuses from the second request onward, and does not accept new logins until the active connection is terminated. 
-If the server is restarted or closed while any file operation is being done, first send to the active connections the message stating you are intending to close, then wait to finish reading from socket, then finish doing file operations.
+This is ***very*** important to keep the synchronization, the same user can only have one active connection with the server, ***not more***.
+Only one client can connect to the server with a specific user, so only one instance of the same user can be connected to the server at the same time. If more try to connect the server simply refuses from the second request onward, and does not accept new logins until the active connection is terminated. 
+If the server is restarted or closed while any file operation is being made, first send to the active connections the message with header title [`WANTS_TO_CLOSE_CONNECTION`](ServerTelefono/src/fredver/ioutils/HeaderTitle.java) stating you are intending to close, then wait to finish reading from socket by reading up to the message with the header title [`WILL_SEND_NO_MORE_DATA`](ServerTelefono/src/fredver/ioutils/HeaderTitle.java) **TODO WHAT IF THEY DON'T SEND THAT MESSAGE - SOLUTION: MAKE IT SO THAT AFTER 5 SECONDS OR SO OF NOT RECEIVING DATA THE SOCKET CLOSES AUTOMATICALLY**, then finish doing file operations.
 Multiple connections to the server may be opened at same time, and the server has to process them all at the same time.
 Messages can be sent at any moment from the clients and from the server, so they both have to be ready to process all messages at all times.
 Users with low permissions can only access their folder, so no conflict can come from them, unless an admin starts doing stuff on their folders while they are doing stuff too, like deleting and reading at the same time, for example. Read, modify, and write operations could clash. Read operations could read from a file that is being deleted, or try to read while a file is being deleted, so they might be then doing operations on a file that doesn't exist anymore. Two of the same file could be tried to be created at the same time, and this could be a problem.
@@ -134,4 +124,4 @@ In substance:
 - When you read from a file, you cannot delete the file until it has finished reading. You can obviously not create it, as it already exists
 - When deleting a file, you have to block reading and deleting that file. Then you have to make it so that the aforementioned operations will not give problems now that the file that is object of those operations does not exist anymore. You obviously cannot create it since it already exists.
 
-**ELIMINATE THIS** the first release will be with only one connection at a time, with plans to expand it to multiple concurrent connections in the future.
+The server will create a `java.util.HashSet` to keep track of all active connections, as it yields the best performances when randomly removing elements.
