@@ -25,48 +25,10 @@ public class Server {
 	private static Scanner terminalScanner = new Scanner(System.in);
 	private static boolean isServerStarted = false;
 	private static SSLServerSocket serverSocket;
-	private static boolean offlineMode = false;
 	private static Set<SSLSocket> connections = new HashSet<>();
 	
 	public static void main(String[] args) {
-		 try {
-			serverSocket = (SSLServerSocket) 
-					 ( (SSLServerSocketFactory) 
-							 SSLServerSocketFactory.getDefault() ).createServerSocket();
-		} catch (IOException e) {
-			print("Could not create the server socket");
-			print("The exception's message is:");
-			print(e.getMessage());
-			print("Starting offline server interface");
-			offlineMode = true;
-		}
-		
-		if(offlineMode) {
-			administrationConsoleOffline();
-		} else {
-			while(true) {
-				print("Do you want to start in offline or online mode?");
-				print("write:");
-				print("0: exit server");
-				print("1: online mode");
-				print("2: offline mode");
-				
-				switch(terminalScanner.nextLine().charAt(0)) {
-				case '0': 
-					return; // can safely exit this way because no connections have been accepted
-				case '1':
-					break;
-				case '2':
-					offlineMode = true;
-					break;
-				default:
-					continue;
-				}
-				
-				if(offlineMode) administrationConsoleOffline();
-				else administrationConsole();
-			}
-		}	
+		 administrationConsole();	
 	}
 	
 	private static void print(String message) {
@@ -76,7 +38,7 @@ public class Server {
 	private static void administrationConsole() {
 		while(true) {
 			OUTER_LOOP:
-				while(true) {
+				while(!isServerStarted) {
 					switch(printAdminConsoleMainMenu()) {
 					case 0: 
 						try {
@@ -120,29 +82,28 @@ public class Server {
 						break;
 					}
 				}
-		}
-		
-	}
-	
-	private static void administrationConsoleOffline() {
-		while(true) {
-			switch(printAdminConsoleMainMenuOffline()) {
-			case 0: 
-				System.exit(0);
-				break;
-			case 1: 
-				// implementare manage users
-				break;
-			case 2: 
-				// implementare navigate folders
-				break;
-			case 3: 
-				// implementare benchmark e specs
-				break;
+			while(isServerStarted) {
+				switch(printAdminConsoleMainMenuOffline()) {
+				case 0: 
+					System.exit(0);
+					break;
+				case 1: 
+					// implementare manage users
+					break;
+				case 2: 
+					// implementare navigate folders
+					break;
+				case 3: 
+					// implementare benchmark e specs
+					break;
+				case 4:
+					printAdminManageOnlineStatus();
+					break;
+				}
 			}
 		}
-	}
-	
+		
+	}	
 	
 	private static int printAdminConsoleMainMenu() {
 		
@@ -183,6 +144,7 @@ public class Server {
 			print("1: manage users");
 			print("2: navigate folders");
 			print("3: server specs and benchmark");
+			print("4: manage server online status");
 			
 			char answerChar = terminalScanner.nextLine().charAt(0);
 			
@@ -191,6 +153,7 @@ public class Server {
 			case '1': 
 			case '2': 
 			case '3':
+			case '4':
 				return answerChar - '0';
 			default: 
 				print("Invalid input, try again");
@@ -225,14 +188,14 @@ public class Server {
 				} else {
 					print("Turning server on...");
 					try {
-						serverSocket.bind(new InetSocketAddress("0.0.0.0", Constants.SERVER_PORT_NUMBER));
+						turnOnServer();
+						print("Server successfully turned on");
 					} catch (IOException e) {
 						print("Problem binding the ServerSocket to the port " + Constants.SERVER_PORT_NUMBER);
 						print("The exception's message is:");
 						print(e.getMessage());
 						break;
 					}
-					print("Server successfully turned on");
 				}
 				exitToMainMenu = true;
 				continue;
@@ -241,7 +204,7 @@ public class Server {
 					print("Turning server off...");
 					try {
 						turnOffServer();
-						print("Server successfully terminated");
+						print("Server successfully turned off");
 					} catch (IOException e) {
 						while(true) {
 							print("There was a problem shutting the server down");
@@ -278,12 +241,19 @@ public class Server {
 		}
 	}
 	
-	private static void turnOffServer() throws IOException {
+	private static void turnOffServer() throws IOException { IMPLEMENT BETTER CLOSING OF SOCKETS WITH A LIST OF EXCEPTION THROWN
 		for(SSLSocket s : connections) {
-			ASPETTA FINISCA DI PRENDERE TUTTI I DATI
+			connections.remove(s);
 			s.close();
+			isServerStarted = false;
 		}
-		
-		MANDA MESSAGGIO DI DISCONNESSIONE AL CLIENT
-	}	
+		serverSocket.close();
+	}
+	
+	private static void turnOnServer() throws IOException {			
+			serverSocket = (SSLServerSocket) 
+					( (SSLServerSocketFactory) 
+							SSLServerSocketFactory.getDefault() ).createServerSocket();
+		serverSocket.bind(new InetSocketAddress("0.0.0.0", Constants.SERVER_PORT_NUMBER));
+	}
 }

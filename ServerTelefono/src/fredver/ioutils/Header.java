@@ -4,24 +4,27 @@ import fredver.errorhandling.CheckedIllegalArgumentException;
 
 public class Header {
 	
-	private String value;
-	private RequestType requestType;
+	private String body;
+	private HeaderTitle headerTitle;
 	
-	public Header(RequestType requestType, String value) throws CheckedIllegalArgumentException {
-		if(requestType == null) 
+	public static final String HEADER_BODY_GRANTED = "GRANTED";
+	public static final String HEADER_BODY_NEGATED = "NEGATED";
+	
+	public Header(HeaderTitle headerTitle, String body) throws CheckedIllegalArgumentException {
+		if(headerTitle == null) 
 			throw new CheckedIllegalArgumentException("Request type of value null when initializing Header class instance");
-		if(value == "")
+		if(body == "")
 			throw new CheckedIllegalArgumentException("Content of empty value when initializing Header class instance");
-		this.value = value;
-		this.requestType = requestType;
+		this.body = body;
+		this.headerTitle = headerTitle;
 	}
 
 	public String getValue() {
-		return value;
+		return body;
 	}
 
-	public RequestType getRequestType() {
-		return requestType;
+	public HeaderTitle getRequestType() {
+		return headerTitle;
 	}
 		
 }
