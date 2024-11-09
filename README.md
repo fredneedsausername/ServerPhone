@@ -5,7 +5,8 @@
 >[!WARNING]
 >Bug if the socket buffer size is less than the metadata dimensions
 
-
+**TODO REMOVE ALL REFERENCES FROM IMPLEMTENTATION AND DOCUMENTATION OF FOUR WAY HANDSHAKE**
+**TODO UPDATE FINISHED_DATA IMPLEMENTATION AND DOCUMENTATION WITH WRITING A NUMBER TO REPRESENT THE RAW DATA LENGTH OF THE MESSAGE. BE CAREFUL IF THE MESSAGE IS LONGER OR SHORTER THAN THE SPECIFIED DATA, OR IF THE LENGTH IS ZERO OR NEGATIVE. IT HAS TO BE KEPT IN A `BigInteger` BECAUSE INT IS LIMITED TO 2 BILLION, WHICH IN BYTES IS 2 GIGS**
 
 # ServerPhone
 _Believe it or not, this is the third time i delete this repo because of configurations issues, which took me a day to sort out.<br>
@@ -18,12 +19,11 @@ This client/server application is a media server and a passion project, which ai
 
 ## Connection
 **Todo: scrivere nella documentazione che il buffer del socket è impostato custom, e asicurarsi di non star restringendo il buffer con 512kb**
-**TODO CI POSSONO ESSERE PIU CONNESSIONI ALLO STESSO TEMPO**
-
+**TODO è una implementazione duplex**
 
 ## Security
 
-**TODO** There is to consider also that it might be necessary to implement validation of all incoming data to prevent attacks like buffer overflow or injection attacks, always with the objective of protecting against eavesdropping attacks. This is also the issue that arises if the data sent is bigger than what the server can accept<br>
+**TODO** There is to consider also that it might be necessary to implement validation of all incoming data to prevent attacks like buffer overflow or injection attacks, always with the objective of protecting against eavesdropping attacks. This is also the issue that arises if the data sent is bigger than what the server can accept<br> Solution: `NOT_SUFFICIENT_STORAGE`
 
 I use `SSLSocket` to ensure a secure communication, the server using a custom certificate not issued by a CA to protect against MITM attacks, so you have to know the server administrator and ask him to give you the certificate verification information. Not because it is secret, but to ensure that it is the right one and a MITM attack doesn't happen on first connection. This is to ensure the server can run with complete protection from eavesdropping, even when it doesn't have a domain (so that a certificate can be issued by a CA), considering that in most cases contacting the administrator will be possible.<br>
 <br>
@@ -72,6 +72,7 @@ Here is a comprehensive table with all possible values header titles values, as 
 |`NEW_TLS_CERTIFICATE`|||
 |`WANTS_TO_CLOSE_CONNECTION`|||
 |`WILL_SEND_NO_MORE_DATA`|||
+|`MESSAGE_SEPARATOR`|To be sent after sending any message, to signal that the raw data section of the other ||
 **TODO RETURN VALUES DEL CLIENT E DEL SERVER SE VENGONO MANDATI QUESTI MESSAGGI**
 
 ### Closing connections
