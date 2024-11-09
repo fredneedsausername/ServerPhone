@@ -5,7 +5,7 @@
 >[!WARNING]
 >Bug if the socket buffer size is less than the metadata dimensions
 
-**TODO** There is to consider also that it might be necessary to implement validation of all incoming data to prevent attacks like buffer overflow or injection attacks, always with the objective of protecting against eavesdropping attacks. This is also the issue that arises if the data sent is bigger than what the server can accept<br>
+
 
 # ServerPhone
 _Believe it or not, this is the third time i delete this repo because of configurations issues, which took me a day to sort out.<br>
@@ -16,7 +16,14 @@ This client/server application is a media server and a passion project, which ai
 
 # Implementation
 
+## Connection
+**Todo: scrivere nella documentazione che il buffer del socket è impostato custom, e asicurarsi di non star restringendo il buffer con 512kb**
+**TODO CI POSSONO ESSERE PIU CONNESSIONI ALLO STESSO TEMPO**
+
+
 ## Security
+
+**TODO** There is to consider also that it might be necessary to implement validation of all incoming data to prevent attacks like buffer overflow or injection attacks, always with the objective of protecting against eavesdropping attacks. This is also the issue that arises if the data sent is bigger than what the server can accept<br>
 
 I use `SSLSocket` to ensure a secure communication, the server using a custom certificate not issued by a CA to protect against MITM attacks, so you have to know the server administrator and ask him to give you the certificate verification information. Not because it is secret, but to ensure that it is the right one and a MITM attack doesn't happen on first connection. This is to ensure the server can run with complete protection from eavesdropping, even when it doesn't have a domain (so that a certificate can be issued by a CA), considering that in most cases contacting the administrator will be possible.<br>
 <br>
@@ -36,27 +43,40 @@ I don't even have to think about implementing a defense against DDoS attacks, an
 ## Custom protocol
 In [fredver.ioutils](ServerTelefono/src/fredver/ioutils) package there is the implementation of the classes used for my own protocol.
 ### Structure 
-```
-headertitle1:headerbody1;headertitle2:headerbody2;headertitleN:headerbodyN|rawdata
-```
-There can be as many headers as you want, but they have to each have their title match one of the titles' names specified by the [`HeaderTitle`](ServerTelefono/src/fredver/ioutils/HeaderTitle.java) enum. No field can ever not have a value, the default "non-value" is "null", as defined in [`Constants.NULL_VALUE`](ServerTelefono/src/fredver/constants/Constants.java) <br>
+
+~~headertitle1:headerbody1;headertitle2:headerbody2;headertitleN:headerbodyN|rawdata~~
+
+**TODO IN IMPLEMENTAZIONE se un messaggio è più grande di 512kb bisogna fare attenzione al fatto che ogni messaggio bufferizzato non avrà l'header, quindi bisogna creare un altro messaggio con FINISHED_DATA**
+There can be **TODO ONLY A HEADER** ~~as many headers as you want~~ , but they have to each have their title match one of the titles' names specified by the [`HeaderTitle`](ServerTelefono/src/fredver/ioutils/HeaderTitle.java) enum. No field can ever not have a value, the default "non-value" is "null", as defined in [`Constants.NULL_VALUE`](ServerTelefono/src/fredver/constants/Constants.java) <br>
 To have a formal definition of what is a valid message, it has to match this regex: 
-```
-^([^:;]+:[^:;]+(?:;[^:;]+:[^:;]+)*)\\|(.+)$
-```
+
+~~^([^:;]+:[^:;]+(?:;[^:;]+:[^:;]+)*)\\|(.+)$~~ **TODO UPDATE REGEX and header class IN IMPLEMENTATION AND DOCUMENTATION**
+
 There are two static Strings defined in [`fredver.ioutils.Message`](ServerTelefono/src/fredver/ioutils/Message.java), which are Pre-compiled messages you can use to signal connection termination:
 
 **TODO UPDATE THE TABLE**
 | Pre-compiled message String name | Message  |
-| ------------- | ------------- |
+| :---: | :---: |
 | clientToServerDisconnectionMessage  | to be sent by client to server to signal they request to terminate the connection  |
 | serverToClientWantsToShutOffMessage | to be sent by the server to the client to signal it wants to shut off, so to not send data anymore |
 
-NOT AUTHORIZED if not authorized to perform the operation **TODO PUT IN NEW TABLE YOU HAVE TO CREATE HERE WITH ALL THE HEADER TITLES**
-You can get and use these values with the respective methods that start with `get`, and terminate with the name of the pre-compiled String.
+You can get and use these values with the respective methods that start with `get`, and terminate with the name of the pre-compiled String.<br>
+Here is a comprehensive table with all possible values header titles values, as defined in [`HeaderTitle`](ServerTelefono/src/fredver/ioutils/HeaderTitle.java), and how they are used based on if the server or client sends it.
+|Header title|Meaning if the client sends it|Meaning if the server sends it|
+|:---:|:---:|:---:|
+|`NULL`|To represent an empty value|To represent an empty value|
+|`LIST_FILES_AND_DIRECTORIES`|To ask the server to list the files and directories of the path specified in the header body|To answer to the `LIST_FILES_AND_DIRECTORIES` request with the content data in the raw body, and , if the user is authorized, otherwise responds with `NOT_AUTHORIZED`|
+|`GET_FILE_OR_FOLDER`|To ask the server to send the contents of a file or folder. Specifies in||
+|`PUBLISH_FILE_OR_FOLDER`|**TODO THINK OF WHAT HAPPENS IF THERE IS NOT ENOUGH STORAGE IN THE SERVER TO STORE THE FILES: WILL IT continue accepting the input? What will it do with the rest of the received input? will it throw it away? what will it do with the file it started writing in its memory?**|**TODO THINK OF WHAT HAPPENS IF THERE IS NOT ENOUGH STORAGE IN THE SERVER TO STORE THE FILES: WILL IT continue accepting the input? What will it do with the rest of the received input? will it throw it away? what will it do with the file it started writing in its memory?**|
+|`NOT_SUFFICIENT_STORAGE`|**TODO THINK OF WHAT HAPPENS IF THERE IS NOT ENOUGH STORAGE IN THE SERVER TO STORE THE FILES: WILL IT continue accepting the input? What will it do with the rest of the received input? will it throw it away? what will it do with the file it started writing in its memory?**|**TODO THINK OF WHAT HAPPENS IF THERE IS NOT ENOUGH STORAGE IN THE SERVER TO STORE THE FILES: WILL IT continue accepting the input? What will it do with the rest of the received input? will it throw it away? what will it do with the file it started writing in its memory?**|
+|`NEW_TLS_CERTIFICATE`|||
+|`WANTS_TO_CLOSE_CONNECTION`|||
+|`WILL_SEND_NO_MORE_DATA`|||
+**TODO RETURN VALUES DEL CLIENT E DEL SERVER SE VENGONO MANDATI QUESTI MESSAGGI**
 
 ### Closing connections
-If the client or server wants to close the connection with the other, it sends a message with header title [`WANTS_TO_CLOSE_CONNECTION`](ServerTelefono/src/fredver/ioutils/HeaderTitle.java) to the other, it will then stop sending information **TODO POSSIBLE BUG, WHAT HAPPENS IF IT CONTINUES SENDING INFORMATION**, and the other will take this connection closing information and process it this way: it will send a message with header title [`WILL_SEND_NO_MORE_DATA`](ServerTelefono/src/fredver/ioutils/HeaderTitle.java) to say that all data has finished sending **TODO UPDATE THE TABLE IN THE STRUCTURE SUB-SECTION OF CUSTOM PROTOCOL TAKING THE DATA FROM fredver.ioutils.HeaderTitle** and then will not send anything anymore **TODO POTENTIAL BUG WHAT HAPPENS IF IT CONTINUES SENDING INFORMATION**, so that when all the data will be finished sending that will be the last message sent and it will be read by the one who wanted to close the connection, which will know the sending of the last data from both parts has been done, so it can finally close the connection. The other (not the one who started the connection termination, but the other one) will ***NOT*** close the connection before receiving that last message **TODO WHAT HAPPENS IF IT DOES, POTENTIAL BUG**, so that it all ends gracefully.
+**TODO what happens if the server initializes the process of shutting off while the client is in the middle of the process to disconnect, and vice versa**
+If the client or server wants to close the connection with the other, it sends a message with header title [`WANTS_TO_CLOSE_CONNECTION`](ServerTelefono/src/fredver/ioutils/HeaderTitle.java) to the other, it will then stop sending information, and the other will take this connection closing information and process it this way: it will send a message with header title [`WILL_SEND_NO_MORE_DATA`](ServerTelefono/src/fredver/ioutils/HeaderTitle.java) to say that all data has finished sending and then will not send anything anymore **TODO POTENTIAL BUG WHAT HAPPENS IF IT CONTINUES SENDING INFORMATION**, so that when all the data will be finished sending that will be the last message sent and it will be read by the one who wanted to close the connection, which will know the sending of the last data from both parts has been done, so it can finally close the connection. The other (not the one who started the connection termination, but the other one) will ***NOT*** close the connection before receiving that last message **TODO WHAT HAPPENS IF IT DOES, POTENTIAL BUG**, so that it all ends gracefully. Also, the one who started the disconnection process ***will make sure*** the [`WANTS_TO_CLOSE_CONNECTION`](ServerTelefono/src/fredver/ioutils/HeaderTitle.java) message that disconnects it from the other is sent ***before*** closing the socket. Same goes for the other, who ***will make sure*** that the [`WILL_SEND_NO_MORE_DATA`](ServerTelefono/src/fredver/ioutils/HeaderTitle.java) is sent ***before*** closing the socket, ***otherwise*** will remain open waiting for the other to say it's ready to close. This would have the consequence of not making the one that wants to disconnect, disconnect.
 
 
 <br>
