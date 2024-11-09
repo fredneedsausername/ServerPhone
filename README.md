@@ -4,7 +4,11 @@
 
 
 **Bug if the socket buffer size is less than the metadata information dimensions**
-**TODO REMOVE ALL REFERENCES FROM IMPLEMTENTATION AND DOCUMENTATION OF FOUR WAY HANDSHAKE**
+
+`NOT_SUFFICIENT_STORAGE`**TODO THINK OF WHAT HAPPENS IF THERE IS NOT ENOUGH STORAGE IN THE SERVER TO STORE THE FILES: WILL IT continue accepting the input? What will it do with the rest of the received input? will it throw it away? what will it do with the file it started writing in its memory? ALSO MEMORY COULD BE SUFFICIENT AT THE START OF THE REQUEST BUT COULD NOT BECOME SUFFICIENT AS THE DATA IS SENT, SO YOU HAVE TO SEND A NOT_SUFFICIENT_STORAGE MESSAGE IN THAT SITUATION, TOO, AND ELIMINATE THE FILES THAT WERE GENERATING TODO THINK OF WHAT HAPPENS IF THERE IS NOT ENOUGH STORAGE IN THE SERVER TO STORE THE FILES: WILL IT continue accepting the input? What will it do with the rest of the received input? will it throw it away? what will it do with the file it started writing in its memory?**
+
+
+**TODO UPDATE HEADER_BODY_NEGATED WITH HEADER_BODY_REFUSED**
 
 # ServerPhone
 _Believe it or not, this is the third time i delete this repo because of configurations issues, which took me a day to sort out.<br>
@@ -13,37 +17,20 @@ I finally managed to publish my work here, i will keep you posted here._<br>
 Special thanks go to classical, jazz, phonk, and rock music for keeping me company during the creation of this little project.<br>
 <br>
 This project supports full JavaDoc documentation, so feel free to consult it.
-
 ## Purpose
 This client/server application is a media server and a passion project, which aims to repurpose an old phone to act as a cloud (i know it's not technically a cloud because it's not distributed) for me and also, in future, if concurrency is added, to act as a NAS for me and my father. Not that we need it, i just think it's cool to have a NAS i myself built from scratch (not from scratch like extracted the silica but you're getting the point).
+
+<br>
+<br>
+<br>
 
 # Implementation
 
 ## Connection
-**Todo: scrivere nella documentazione che il buffer del socket è impostato custom, e asicurarsi di non star restringendo il buffer con 512kb**
-**TODO è una implementazione duplex**
-**TODO TRANSLATE AND IMPLEMENT THE FOLLOWING CODE BLOCK**
-```
-cosa succede se uno dei due schianta mentre NON stava venendo trasmesso nulla, e quindi se dopo, quando l'altro
- prova a mandare un messaggio non trova nulla? Soluzione: se ne rende conto da solo perché è TCP/IP, imposta un
-timer di timeout o controlla che non esista già.
-
-cosa succede se la connessione viene interrotta improvvisamente (errore di connessione, il pc del client schianta)?
-Possibile soluzione: prima impara se il socket mandante se ne rende conto da solo che la connessione è chiusa, e se
-no, allora imposta un timeout del socket durante la trasmissione dei dati, reagisci di conseguenza se l'altro non risponde.
-
-se l'altro crasha mentre sta mandando dati prima di mandare FINISHED_DATA, io sarò in ascolto per sempre perché non saprò
-che l'altro è morto. soluzione: impostare un timeout nel socket in ascolto, per poi toglierlo se scade.
-
-soluzione a molti problemi: quando ci si aspetta di ricevere dei dati o se ne sta trasmettendo, impostare un timeout nel
-socket in ascolto, per poi toglierlo. Però è ***fondamentale*** che se si è il server, oltre a chiudere la connessione,
-la si tolga anche dal set dei socket con connessioni attive.
-```
-
+To ensure a connection doesn't stay open after an abrupt crash from the other side, a timeout (`setSoTimeout()`) of [`Constants.READ_TIMEOUT`](ServerTelefono/src/fredver/constants/Constants.java) milliseconds is set to the reading `SSLSocket`. To keep the connection alive, a heartbeat with an interval of [`Constants.HEATBEAT_INTERVAL`](ServerTelefono/src/fredver/constants/Constants.java) milliseconds is set
+<br>
+<br>
 ## Security
-
-**TODO** There is to consider also that it might be necessary to implement validation of all incoming data to prevent attacks like buffer overflow or injection attacks, always with the objective of protecting against eavesdropping attacks. This is also the issue that arises if the data sent is bigger than what the server can accept<br> Solution: `NOT_SUFFICIENT_STORAGE`
-
 I use `SSLSocket` to ensure a secure communication, the server using a custom certificate not issued by a CA to protect against MITM attacks, so you have to know the server administrator and ask him to give you the certificate verification information. Not because it is secret, but to ensure that it is the right one and a MITM attack doesn't happen on first connection. This is to ensure the server can run with complete protection from eavesdropping, even when it doesn't have a domain (so that a certificate can be issued by a CA), considering that in most cases contacting the administrator will be possible.<br>
 <br>
 The `SSLSocket` uses **TODO** encryption details<br>
@@ -55,7 +42,6 @@ I don't even have to think about implementing a defense against DDoS attacks, an
   - To the scope of this server, the only true danger there is is not having an encrypted connection if using the server to store sensitive data, because surely nobody is interested in actuating an attack just to stop the service on a random small media center. Anyways, i'm doing it for myself, and i know that i will not be subject to these kinds of attacks; if someone wants to use this too for their own needs, then they probably don't need a super-secure server, otherwise they would have probably chosen to use a different software
 
 
-<br>
 <br>
 <br>
 
@@ -73,24 +59,43 @@ Which represents none other than a string structured like this:
 ```
 raw-data-length;header-title:header-body|raw-data
 ```
-The raw-data-length information is used to differentiate between message and message, so that it reads up to the message's length and that's the data. **TODO WHAT HAPPENS IF IT READS LESS OR MORE OR IF THE LENGTH IS ZERO OR NEGATIVE. IT HAS TO BE KEPT IN A `BigInteger` BECAUSE INT IS LIMITED TO 2 BILLION, WHICH IN BYTES IS 2 GIGS: BUG**
-There can be only a header, and it has to have its their title match one of the titles' names specified by the [`HeaderTitle`](ServerTelefono/src/fredver/ioutils/HeaderTitle.java) enum. No field can ever not have a value, the default "non-value" is "null", as defined in [`Constants.NULL_VALUE`](ServerTelefono/src/fredver/constants/Constants.java) <br>
+The raw-data-length information is used to differentiate between message and message, so that it reads up to the message's length and that's the data.
+<br>**TODO WHAT HAPPENS IF IT READS LESS OR MORE OR IF THE LENGTH IS ZERO OR NEGATIVE. IT HAS TO BE KEPT IN A `BigInteger` BECAUSE INT IS LIMITED TO 2 BILLION, WHICH IN BYTES IS 2 GIGS: BUG**<br>
+There can be only a header, and it has to have its their title match one of the titles' names specified by the [`HeaderTitle`](ServerTelefono/src/fredver/ioutils/HeaderTitle.java) enum. No field can ever not have a value, the default "non-value" is "null", as defined in [`Constants.NULL_VALUE`](ServerTelefono/src/fredver/constants/Constants.java)
 
 ### Header titles
 Here is a comprehensive table with all possible values header titles values, as defined in [`HeaderTitle`](ServerTelefono/src/fredver/ioutils/HeaderTitle.java), and how they are used based on if the server or client sends it.
 <br> **TODO UPDATE the table removing NOT_AUTHORIZED REFERENCES and updating and completing** 
-|Header title|Meaning if the client sends it|Meaning if the server sends it|
+**structural update to the whole header thing. removal of not_sufficient_storage, it will be put with header_body_granted and header and header_body_refused**<br>
+
+|Header title|If client sends it|if server sends it|
 |:---:|:---:|:---:|
-|`NULL`|To represent an empty value|To represent an empty value|
-|`LIST_FILES_AND_DIRECTORIES`|To ask the server to list the files and directories of the path specified in the header body|To answer to the `LIST_FILES_AND_DIRECTORIES` request with the content data in the raw body, and , if the user is authorized, otherwise responds with `NOT_AUTHORIZED`|
-|`GET_FILE_OR_FOLDER`|To ask the server to send the contents of a file or folder. Specifies in||
-|`PUBLISH_FILE_OR_FOLDER`|**TODO THINK OF WHAT HAPPENS IF THERE IS NOT ENOUGH STORAGE IN THE SERVER TO STORE THE FILES: WILL IT continue accepting the input? What will it do with the rest of the received input? will it throw it away? what will it do with the file it started writing in its memory?**|**TODO THINK OF WHAT HAPPENS IF THERE IS NOT ENOUGH STORAGE IN THE SERVER TO STORE THE FILES: WILL IT continue accepting the input? What will it do with the rest of the received input? will it throw it away? what will it do with the file it started writing in its memory?**|
-|`NOT_SUFFICIENT_STORAGE`|**TODO THINK OF WHAT HAPPENS IF THERE IS NOT ENOUGH STORAGE IN THE SERVER TO STORE THE FILES: WILL IT continue accepting the input? What will it do with the rest of the received input? will it throw it away? what will it do with the file it started writing in its memory?**|**TODO THINK OF WHAT HAPPENS IF THERE IS NOT ENOUGH STORAGE IN THE SERVER TO STORE THE FILES: WILL IT continue accepting the input? What will it do with the rest of the received input? will it throw it away? what will it do with the file it started writing in its memory?**|
-|`NEW_TLS_CERTIFICATE`|||
+|---|`LIST_FILES_AND_DIRECTORIES`|---|
+|Header title|||
+|Header body|||
+|Raw data|||
+|---|---|---|
+||`GET_FILE_OR_FOLDER`||
+|Header title|||
+|Header body|||
+|Raw data|||
+|---|---|---|
+||`PUBLISH_FILE_OR_FOLDER`||
+|Header title|||
+|Header body|||
+|Raw data|||
+|---|---|---|
+||`NEW_TLS_CERTIFICATE`||
+|Header title|||
+|Header body|||
+|Raw data|||
+
+**TODO THINK OF WHAT HAPPENS IF THERE IS NOT ENOUGH STORAGE IN THE SERVER TO STORE THE FILES: WILL IT continue accepting the input? What will it do with the rest of the received input? will it throw it away? what will it do with the file it started writing in its memory?**|**TODO THINK OF WHAT HAPPENS IF THERE IS NOT ENOUGH STORAGE IN THE SERVER TO STORE THE FILES: WILL IT continue accepting the input? What will it do with the rest of the received input? will it throw it away? what will it do with the file it started writing in its memory?**|
+
+
 **TODO RETURN VALUES DEL CLIENT E DEL SERVER SE VENGONO MANDATI QUESTI MESSAGGI**
 
 
-<br>
 <br>
 <br>
 
@@ -102,14 +107,12 @@ The server through the console can be able to:
   - Navigate through the folders and manage them
   - Manage the active connections
   - Benchmark and get the specs of the machine the server is running on
-  - Change or set up a new tls certificate of the server manually. **TODO: IMPLEMENT ON THE CONSOLE AAAAAAAAAAAAAAAAA**
+  - Change or set up a new tls certificate of the server manually. **TODO: IMPLEMENT ON THE CONSOLE --------------------**
 <br>
 The console can be able to be accessed remotely, you just have to be logged in as administrator.<br>
 The console can run in offline mode, but has to be specified at startup. In this mode you can manage files, users, and benchmark and get the specs of the machine the server is running on.
 
 
-
-<br>
 <br>
 <br>
 
@@ -117,24 +120,21 @@ The console can run in offline mode, but has to be specified at startup. In this
 The client is able to:
 - to connect to the server specifying its ip address and port, with a functionality to save those info for later reuse, and change them to a different one.
 - access the console if it is an admin, otherwise a specific menu based on its authorization level. See [`fredver.clientserver.PermissionLevel`](ServerTelefono/src/fredver/clientserver/PermissionLevel.java) enum.
-- change or set up a new tls certificate of the server and get it. **TODO: FIGURE HOW THE HELL TO DO THIS AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA**
+- change or set up a new tls certificate of the server and get it. **TODO: FIGURE HOW THE HELL TO DO THIS -----------------------**
 - based on its certification level:
   - navigate through the folders 
   - get files and directories
   - upload files and directories
   - create files and directories
 
-
-<br>
 <br>
 <br>
 
 ## User management
 **TODO**
 There may be multiple users, each having their dedicated folder under the users folder. Each user has a password and username, which they have to use to connect to the server. Each user has their access level, from the defined ones in [`fredver.clientserver.PermissionLevel`](ServerTelefono/src/fredver/clientserver/PermissionLevel.java) enum. Each user can only interact with the contents of its user folder, unless it's the admin.<br>
-The admin can set a limit, which is ***highly recommended***, of how much storage a user has allocated to himself (his folder). If this limit is exceeded when creating or uploading new files or folders, then the operation is cancelled, and the message with the header title [`NOT_SUFFICIENT_STORAGE`](ServerTelefono/src/fredver/ioutils/HeaderTitle.java) is sent to the server. **TODO IMPLEMENT THIS AAAAAAAAAAAAAAAAAAAAAA**
+The admin can set a limit, which is ***highly recommended***, of how much storage a user has allocated to himself (his folder). If this limit is exceeded when creating or uploading new files or folders, then the operation is cancelled, and the message with the header title [`NOT_SUFFICIENT_STORAGE`](ServerTelefono/src/fredver/ioutils/HeaderTitle.java) is sent to the server. **TODO IMPLEMENT THIS ----------------------------** **TODO NOT_SUFFICIENT_STORAGE NOT USED ANYMORE**
 
-<br>
 <br>
 <br>
 
