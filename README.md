@@ -10,6 +10,7 @@
 **TODO should i add eclipse configuration files in the .gitignore? Are they necessary for java to work? Are they specific to eclipse? How to compensate for people that use a different ide, and need those configurations files, too? Is there a way to not publish on GitHub those files at all?**
 **TODO REFACTOR AUTHORIZATIONLEVEL WITH A BOOLEAN ISADMIN**
 **TODO ADD A UUID TO EVERY MESSAGE SO THAT IT DOESN'T GO CONFUSED, UPDATE TABLE OF HEADER TITLES TO, INSTEAD OF HAVING AS HEADER TITLE A REQUEST, HAVE THE UUID OF THE REQUEST**
+**TODO GIVE 5MB OF STORAGE OR SOME OTHER SMALL AMOUNT TO THE SERVER FOLDER, SO THAT IT CAN KEEP ALL INFO ABOUT THE USERS, AND THE CERTIFICATE**
 <br>
 # ServerPhone
 _Believe it or not, this is the third time i delete this repo because of configurations issues, which took me a day to sort out.<br>
@@ -54,7 +55,6 @@ The server is installed in a certain folder, which is the folder where the execu
 In [fredver.ioutils](ServerTelefono/src/fredver/ioutils) package there is the implementation of the classes used for my own protocol.
 ### Structure 
 To have a formal definition of what is a valid message, it has to match this regex:
-**TODO PUT A UUID**
 ```
 ^([a-fA-F0-9]{32})-([0-9]{1,3});([^;:\|]{1,50}):([^;:\|]{1,4096})\|(.+)$
 ```
@@ -71,42 +71,53 @@ Each message is identified by a UUID, that, if to send the message it is:
 The header body is of a maximum of 4096 characters because that's the max path of linux, and the header body is used, at its max length, to represent file paths.<br>
 <br>
 The raw-data-length information is used to differentiate between message and message, so that it reads up to the message's length and that's the data.
-<br> **TODO WHAT IT HAS TO BE KEPT IN A `BigInteger` BECAUSE INT IS LIMITED TO 2 BILLION, WHICH IN BYTES IS 2 GIGS: BUG** <br>
+<br> 
+
+**TODO WHAT IT HAS TO BE KEPT IN A `BigInteger` BECAUSE INT IS LIMITED TO 2 BILLION, WHICH IN BYTES IS 2 GIGS: BUG** 
 <br>
-There can be only a header, and it has to have its their title match one of the titles' names specified by the [`HeaderTitle`](ServerTelefono/src/fredver/ioutils/HeaderTitle.java) enum. No field can ever not have a value, the default "non-value" is "null", as defined in [`Constants.NULL_VALUE`](ServerTelefono/src/fredver/constants/Constants.java).**TODO BUG WHAT HAPPENS IF IT IS NULL**<br>
+<br>
+There can be only a header, and it has to have its their title match one of the titles' names specified by the [`HeaderTitle`](ServerTelefono/src/fredver/ioutils/HeaderTitle.java) enum. No field can ever not have a value, the default "non-value" is "null", as defined in [`Constants.NULL_VALUE`](ServerTelefono/src/fredver/constants/Constants.java). <br>
 <br>
 Each message it is sent in mind with the fact that the user is currently in a specific directory, so, for example, if a message with [`LIST_FILES_AND_DIRECTORIES`](ServerTelefono/src/fredver/ioutils/HeaderTitle.java) header is sent, then it will list all the files and directories in that specific directory.
 
 ### Receiving and sending files
-if the server or the client are communicating raw file data, base85 encoding of the files data is used. Why? Because sending raw data does not leave free characters to use as delimiters to differentiate between the different files' data and filenames, when transmitting multiple of them with the same message. Then why not Base64? Because it adds padding, and this has the consequence that it will not be distinguishable from actual data, because it flows like a stream from one socket to the other. You obviously cannot load into memory the file in its whole to transmit it so that the server can load it all into memory and then revert it back to normal encoding, because that puts a memory burden that could not be supported by either the client or the server. Base85, also, reduces the space occupied by data, so that it is faster to transmit via sockets. This is the same optimization result of having a bigger buffer. **TODO ADD INFORMATION ABOUT FORMATTING OF MULTIPLE FILE MESSAGES**
+if the server or the client are communicating raw file data, base85 encoding of the files data is used.<br>
+Why? Because sending raw data does not leave free characters to use as delimiters to differentiate between the different files' data and filenames, when transmitting multiple of them with the same message.<br>
+<br>
+Then why not Base64?<br>
+Because it adds padding (`=` characters) if encoded bytes are not a multiple of `3`, and this has the consequence that it will not be distinguishable from actual data, because it flows like a stream from one socket to the other.<br>To avoid the padding's creation, you obviously cannot load into memory the file in its whole to transmit it so that the server can load it all into memory and then revert it back to normal encoding, because that puts a memory burden that could not be supported by either the client or the server.<br>
+Base85, also, reduces the space occupied by data, so that it is faster to transmit via sockets. This is the same optimization result of having a bigger buffer. <br> **
+<br>
+File data, or data of multiple files, is structured inside the raw data section as per the folllowing explanation:
+  - The file name and data are separated by the constant [`fredver.constants.Constants.FILE_NAME_AND_FILE_DATA_SEPARATOR`](ServerTelefono/src/fredver/constants/Constants.java), which is not a value encoded by base85 encoding
+  - A file's data and the next file's name are separated by the constant[`fredver.constants.FILE_DATA_AND_NEXT_FILE_NAME_SEPARATOR`](ServerTelefono/src/fredver/constants/Constants.java), which is not a value encoded by base85 encoding.
 
 ### Header titles
-Here is a comprehensive table with all possible values header titles values, as defined in [`HeaderTitle`](ServerTelefono/src/fredver/ioutils/HeaderTitle.java), and how they are used based on if the server or client sends it.
-<br> **TODO UPDATE the table updating and completing** 
-There can be various answers in the body, they are all in [fredver.ioutils.Header](ServerTelefono/src/fredver/ioutils/Header.java) and are called `HEADER_BODY_*` where * can be anything, or [fredver.constants.NULL_VALUE](ServerTelefono/src/fredver/constants/Constants.java).
+Here is a comprehensive table with all possible values header titles values, as defined in [`HeaderTitle`](ServerTelefono/src/fredver/ioutils/HeaderTitle.java), and how they are used based on if the server or client sends it.<br>
+<br>
+There can be various answers in the body, they can be those defined in [fredver.ioutils.Header](ServerTelefono/src/fredver/ioutils/Header.java), or [fredver.constants.NULL_VALUE](ServerTelefono/src/fredver/constants/Constants.java).
 
-**TODO IMPLEMENT THE HEADER TITLE PATH_OPERATION, WHICH IS USED AS CD, RMDIR, DEL**
 |------|If client sends it|if server sends it|
 |:---:|:--- |:--- |
 ||**`LIST_FILES_AND_DIRECTORIES`**|**`LIST_FILES_AND_DIRECTORIES`**|
-|Header body:|The directory name to list the files of|It is a response from this same request from the client.<br>Possible values:<br>-`HEADER_BODY_GRANTED`<br>-`HEADER_BODY_INVALID_RAW_DATA_LENGTH`<br>-`HEADER_BODY_NOT_AUTHORIZED`|
-|Raw data:|NULL_VALUE|if granted:<br>-The names of the files and directories, as specified in the [Receiving and sending files](#receiving-and-sending-files) section<br><br>else:<br>-`NULL_VALUE`|
+|Header body:|The directory name to list the files of|It is a response from this same request from the client.<br>Possible values:<br>-`HEADER_BODY_GRANTED`<br>-`HEADER_BODY_INVALID_HEADER_FORMAT`<br>-`HEADER_BODY_NOT_AUTHORIZED`|
+|Raw data:|`NULL_VALUE`|if granted:<br>-The names of the files and directories, as specified in the [Receiving and sending files](#receiving-and-sending-files) section<br><br>else:<br>-`NULL_VALUE`|
 |---|---|---|
 ||**`GET_FILE_OR_FOLDER`**|**`GET_FILE_OR_FOLDER`**|
-|Header body:|The directory or file name to get the files of|It is a response from this same request from the client.<br>Possible values:<br>-`HEADER_BODY_GRANTED`<br>-`HEADER_BODY_INVALID_RAW_DATA_LENGTH`<br>-`HEADER_BODY_NOT_AUTHORIZED`|
+|Header body:|The directory or file name to get the files of|It is a response from this same request from the client.<br>Possible values:<br>-`HEADER_BODY_GRANTED`<br>-`HEADER_BODY_INVALID_HEADER_FORMAT`<br>-`HEADER_BODY_NOT_AUTHORIZED`|
 |Raw data:|`NULL_VALUE`|if granted:<br>-The data of the specified file or folder as specified in the [Receiving and sending files](#receiving-and-sending-files) section<br><br>else:<br>-`NULL_VALUE`|
 |---|---|---|
 ||**`PUBLISH_FILE_OR_FOLDER`**|**`PUBLISH_FILE_OR_FOLDER`**|
-|Header body:|Folder name if there are multiple files and folders, File name otherwise|It is a response from this same request from the client.<br>Possible values:<br>-`HEADER_BODY_GRANTED`<br>-`HEADER_BODY_NOT_ENOUGH_STORAGE`<br>-`HEADER_BODY_INVALID_RAW_DATA_LENGTH`<br>-`HEADER_BODY_NOT_AUTHORIZED`|
+|Header body:|Folder name if there are multiple files and folders, File name otherwise|It is a response from this same request from the client.<br>Possible values:<br>-`HEADER_BODY_GRANTED`<br>-`HEADER_BODY_NOT_ENOUGH_STORAGE`<br>-`HEADER_BODY_INVALID_HEADER_FORMAT`<br>-`HEADER_BODY_NOT_AUTHORIZED`|
 |Raw data:|The data of the files and folders to publish, as specified in the [Receiving and sending files](#receiving-and-sending-files) section|`NULL_VALUE`|
 |---|---|---|
 ||**`NEW_CERTIFICATE`**|**`NEW_CERTIFICATE`**|
-|Header body:|NULL_VALUE|Possible values:<br>-`HEADER_BODY_GRANTED`<br>-`HEADER_BODY_NOT_AUTHORIZED`|
-|Raw data:|NULL_VALUE|If granted:<br>-The new certificate<br><br>else:<br>-NULL_VALUE|
+|Header body:|`NULL_VALUE`|Possible values:<br>-`HEADER_BODY_GRANTED`<br>-`HEADER_BODY_NOT_AUTHORIZED`<br>-`HEADER_BODY_INVALID_HEADER_FORMAT`|
+|Raw data:|`NULL_VALUE`|If granted:<br>-The new certificate<br><br>else:<br>-`NULL_VALUE`|
 |---|---|---|
 ||**`PATH_OPERATION`**|**`PATH_OPERATION`**|
-|Header body:|The operation to be executed. Possible values:<br>-||
-|Raw data:|||
+|Header body:|The operation to be executed.<br>Possible values:<br>-`HEADER_BODY_CD`<br>-`HEADER_BODY_RMDIR`<br>-`HEADER_BODY_DEL`|It is a response from this same request.<br>Possible values:<br>-`HEADER_BODY_INVALID_HEADER_FORMAT`<br>-`HEADER_BODY_GRANTED`<br>-`HEADER_BODY_NOT_AUTHORIZED`<br>`HEADER_BODY_NON_EXISTENT_FOLDER`|
+|Raw data:|The file or folder name to be operated on|`NULL_VALUE`|
 
 <br>
 <br>
