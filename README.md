@@ -2,26 +2,31 @@
 > [!WARNING]
 > Documentation is only partly completed, there might be changes to existing parts and surely new things will be added, especially those marked with **TODO**
 
-**TODO THINK OF WHAT HAPPENS IF THERE IS NOT ENOUGH STORAGE IN THE SERVER TO STORE THE FILES: WILL IT continue accepting the input? What will it do with the rest of the received input? will it throw it away? what will it do with the file it started writing in its memory? ALSO MEMORY COULD BE SUFFICIENT AT THE START OF THE REQUEST BUT COULD NOT BECOME SUFFICIENT AS THE DATA IS SENT, SO YOU HAVE TO SEND A NOT_SUFFICIENT_STORAGE MESSAGE IN THAT SITUATION, TOO, AND ELIMINATE THE FILES THAT WERE GENERATING TODO THINK OF WHAT HAPPENS IF THERE IS NOT ENOUGH STORAGE IN THE SERVER TO STORE THE FILES: WILL IT continue accepting the input? What will it do with the rest of the received input? will it throw it away? what will it do with the file it started writing in its memory?**
-**TODO I WANT TO USE BASE85 ENCODING TO TRANSMIT DATA, UPDATE DOC AND IMPLEMENT**
-**TODO PROTECT FROM USERS TRYING TO ACCESS FOLDERS THAT ARE NOT THEIRS**
-**TODO ARE WRITING OPERATIONS BLOCKING, IN THE SENSE THAT IF SOMETHING IS WRITING TO A FILE, THE WHOLE APPLICATION WILL STAND STILL AND WAIT THAT OTHER PROCESS TO FINISH?**
-**TODO ADD A WAY TO NAVIGATE THROUGH FILES WITH A CLIENT**
-**TODO should i add eclipse configuration files in the .gitignore? Are they necessary for java to work? Are they specific to eclipse? How to compensate for people that use a different ide, and need those configurations files, too? Is there a way to not publish on GitHub those files at all?**
-**TODO REFACTOR AUTHORIZATIONLEVEL WITH A BOOLEAN ISADMIN**
-**TODO ADD A UUID TO EVERY MESSAGE SO THAT IT DOESN'T GO CONFUSED, UPDATE TABLE OF HEADER TITLES TO, INSTEAD OF HAVING AS HEADER TITLE A REQUEST, HAVE THE UUID OF THE REQUEST**
-**TODO GIVE 5MB OF STORAGE OR SOME OTHER SMALL AMOUNT TO THE SERVER FOLDER, SO THAT IT CAN KEEP ALL INFO ABOUT THE USERS, AND THE CERTIFICATE**
+# List of TODOs
+For your pleasure, here is a list of todos:
+  - **TODO THINK OF WHAT HAPPENS IF THERE IS NOT ENOUGH STORAGE IN THE SERVER TO STORE THE FILES: WILL IT continue accepting the input? What will it do with the rest of the received input? will it throw it away? what will it do with the file it started writing in its memory? ALSO MEMORY COULD BE SUFFICIENT AT THE START OF THE REQUEST BUT COULD NOT BECOME SUFFICIENT AS THE DATA IS SENT, SO YOU HAVE TO SEND A NOT_SUFFICIENT_STORAGE MESSAGE IN THAT SITUATION, TOO, AND ELIMINATE THE FILES THAT WERE GENERATING TODO THINK OF WHAT HAPPENS IF THERE IS NOT ENOUGH STORAGE IN THE SERVER TO STORE THE FILES: WILL IT continue accepting the input? What will it do with the rest of the received input? will it throw it away? what will it do with the file it started writing in its memory?**
+  - **TODO I WANT TO USE BASE85 ENCODING TO TRANSMIT DATA, IMPLEMENT**
+  - **TODO ADD A WAY TO NAVIGATE THROUGH FILES WITH A CLIENT**
+  - **TODO should i add eclipse configuration files in the .gitignore? Are they necessary for java to work? Are they specific to eclipse? How to compensate for people that use a different ide, and need those configurations files, too? Is there a way to not publish on GitHub those files at all?**
+  - **TODO REFACTOR AUTHORIZATIONLEVEL WITH A BOOLEAN ISADMIN**
+  - **TODO GIVE 5MB OF STORAGE OR SOME OTHER SMALL AMOUNT TO THE SERVER FOLDER, SO THAT IT CAN KEEP ALL INFO ABOUT THE USERS, AND THE CERTIFICATE**
+  - **TODO IMPLEMENT CERTIFICATES**
 <br>
+<br>
+<br>
+
 # ServerPhone
 _Believe it or not, this is the third time i delete this repo because of configurations issues, which took me a day to sort out.<br>
 I finally managed to publish my work here, i will keep you posted here._<br>
 <br>
 Special thanks go to classical, jazz, phonk, and rock music for keeping me company during the creation of this little project.<br>
 <br>
-This project supports full JavaDoc documentation, so feel free to consult it.
+This project supports full JavaDoc documentation, so feel free to consult it.<br>
+<br>
+The documention in this file is comprehensive and aims to have enough detail, so that one could run with it and make their own implementation.<br>
+If something is unclear, please do feel free to contribute in any way you see fit.
 ## Purpose
-This client/server application is a media server and a passion project, which aims to repurpose an old phone to act as a cloud (i know it's not technically a cloud because it's not distributed) for me and also, in future, if concurrency is added, to act as a NAS for me and my father. Not that we need it, i just think it's cool to have a NAS i myself built from scratch (not from scratch like extracted the silica but you're getting the point).
-
+This client/server application is a media server and a passion project, which aims to repurpose an old phone to act as a cloud (i know it's not technically a cloud because it's not distributed) for myself. This doesn't spawn from a practical need of such a device, but rather from a craving for an applied project, and this seems to be the coolest project i could come up with.
 <br>
 <br>
 <br>
@@ -29,20 +34,16 @@ This client/server application is a media server and a passion project, which ai
 # Implementation
 
 ## Connection
-To ensure a connection doesn't stay open after an abrupt crash from the other side, a timeout (`setSoTimeout()`) of [`Constants.READ_TIMEOUT`](ServerTelefono/src/fredver/constants/Constants.java) milliseconds is set to the reading `SSLSocket`. To keep the connection alive, a heartbeat with an interval of [`Constants.HEATBEAT_INTERVAL`](ServerTelefono/src/fredver/constants/Constants.java) milliseconds is set
+To ensure a connection doesn't stay open after an abrupt crash from the other side, a timeout (`setSoTimeout()`) of [`Constants.READ_TIMEOUT`](ServerTelefono/src/fredver/constants/Constants.java) milliseconds is set to the reading `Socket`. To keep the connection alive, a heartbeat with an interval of [`Constants.HEATBEAT_INTERVAL`](ServerTelefono/src/fredver/constants/Constants.java) milliseconds is set
 <br>
 <br>
 ## Security
-I use `SSLSocket` to ensure a secure communication, the server using a custom certificate not issued by a CA to protect against MITM attacks, so you have to know the server administrator and ask him to give you the certificate verification information. Not because it is secret, but to ensure that it is the right one and a MITM attack doesn't happen on first connection. This is to ensure the server can run with complete protection from eavesdropping, even when it doesn't have a domain (so that a certificate can be issued by a CA), considering that in most cases contacting the administrator will be possible.<br>
+I use `Socket` to ensure a secure communication, the server using an implementation of a self-signed certificate, so you have to know the server administrator and ask him to give you the certificate verification information. This is to protect the server from eavesdropping and MITM attacks, making all connections private. No need for a `SSLSocket`, since endpoint encryption in implemented manually in the certificat itself, which is simply a public/private key pair.<br>
 <br>
-The `SSLSocket` uses **TODO** encryption details<br>
-<br>
-Certificates are generated using **TODO** technology<br>
-<br>
-I don't even have to think about implementing a defense against DDoS attacks, and that is mainly for these reasons:
-  - It might require technologies that are too complicated to be studied and implemented, but i wouldn't know because i didn't study them;
-  - To the scope of this server, the only true danger there is is not having an encrypted connection if using the server to store sensitive data, because surely nobody is interested in actuating an attack just to stop the service on a random small media center. Anyways, i'm doing it for myself, and i know that i will not be subject to these kinds of attacks; if someone wants to use this too for their own needs, then they probably don't need a super-secure server, otherwise they would have probably chosen to use a different software<br>
-To make a server generate a new Certificate, a message with header [`NEW_CERTIFICATE`](ServerTelefono/src/fredver/ioutils/HeaderTitle.java) is sent (see the [Header titles](#header-titles) section), and an answer with the new key is sent, at restarting the new key will be used. **TODO IMPLEMENT THIS**
+I don't even want to think about implementing a defense against DDoS attacks, and that is mainly for these reasons:
+  - It requires cutting edge implementations of complex technologies, out of the bugdget of this project;
+  - Data is privately transported between client and server, so no hacker can read it, and that is what matters. If this project will expand to the point that it will be used to run important services that could be the object of an attack, then the appropriate security measures will be surely implemented.
+To make a server generate a new certificate, a message with header title [`NEW_CERTIFICATE`](ServerTelefono/src/fredver/ioutils/HeaderTitle.java) is sent (see the [Header titles](#header-titles) section), and an answer with the new key is sent. At restarting, the server will use the new key.
 
 
 <br>
@@ -104,7 +105,7 @@ There can be various answers in the body, they can be those defined in [fredver.
 |Raw data:|`NULL_VALUE`|if granted:<br>-The names of the files and directories, as specified in the [Receiving and sending files](#receiving-and-sending-files) section<br><br>else:<br>-`NULL_VALUE`|
 |---|---|---|
 ||**`GET_FILE_OR_FOLDER`**|**`GET_FILE_OR_FOLDER`**|
-|Header body:|The directory or file name to get the files of|It is a response from this same request from the client.<br>Possible values:<br>-`HEADER_BODY_GRANTED`<br>-`HEADER_BODY_INVALID_HEADER_FORMAT`<br>-`HEADER_BODY_NOT_AUTHORIZED`|
+|Header body:|The directory or file name to get the files of|It is a response from this same request from the client.<br>Possible values:<br>-`HEADER_BODY_GRANTED`<br>-`HEADER_BODY_INVALID_HEADER_FORMAT`<br>-`HEADER_BODY_NOT_AUTHORIZED`<br>-`HEADER_BODY_NON_EXISTENT_FOLDER`|
 |Raw data:|`NULL_VALUE`|if granted:<br>-The data of the specified file or folder as specified in the [Receiving and sending files](#receiving-and-sending-files) section<br><br>else:<br>-`NULL_VALUE`|
 |---|---|---|
 ||**`PUBLISH_FILE_OR_FOLDER`**|**`PUBLISH_FILE_OR_FOLDER`**|
@@ -154,7 +155,7 @@ The client is able to:
 <br>
 
 ## Storage
-Each user will have its partition, a folder with their name as name of the folder. If, for any operation, storage is not enough, it will delete the data that was writing **TODO THINK OF WHAT HAPPENS IF THERE IS NOT ENOUGH STORAGE IN THE SERVER TO STORE THE FILES: WILL IT continue accepting the input? What will it do with the rest of the received input? will it throw it away? what will it do with the file it started writing in its memory?**
+Each user will have its partition, a folder with their name as name of the folder. If, for any operation, storage is not enough, it will delete the data that was writing. **TODO THINK OF WHAT HAPPENS IF THERE IS NOT ENOUGH STORAGE IN THE SERVER TO STORE THE FILES: WILL IT continue accepting the input? What will it do with the rest of the received input? will it throw it away? what will it do with the file it started writing in its memory?**
 
 <br>
 <br>
