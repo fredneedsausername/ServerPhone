@@ -3,29 +3,52 @@
 > Documentation is only partly completed, there might be changes to existing parts and surely new things will be added, especially those marked with **TODO**
 
 # List of TODOs
-For your pleasure, here is a list of todos:
-  - **TODO THINK OF WHAT HAPPENS IF THERE IS NOT ENOUGH STORAGE IN THE SERVER TO STORE THE FILES: WILL IT continue accepting the input? What will it do with the rest of the received input? will it throw it away? what will it do with the file it started writing in its memory? ALSO MEMORY COULD BE SUFFICIENT AT THE START OF THE REQUEST BUT COULD NOT BECOME SUFFICIENT AS THE DATA IS SENT, SO YOU HAVE TO SEND A NOT_SUFFICIENT_STORAGE MESSAGE IN THAT SITUATION, TOO, AND ELIMINATE THE FILES THAT WERE GENERATING TODO THINK OF WHAT HAPPENS IF THERE IS NOT ENOUGH STORAGE IN THE SERVER TO STORE THE FILES: WILL IT continue accepting the input? What will it do with the rest of the received input? will it throw it away? what will it do with the file it started writing in its memory?**
-  - **TODO I WANT TO USE BASE85 ENCODING TO TRANSMIT DATA, IMPLEMENT**
-  - **TODO ADD A WAY TO NAVIGATE THROUGH FILES WITH A CLIENT**
+For your pleasure, here is a list of todos:  
   - **TODO should i add eclipse configuration files in the .gitignore? Are they necessary for java to work? Are they specific to eclipse? How to compensate for people that use a different ide, and need those configurations files, too? Is there a way to not publish on GitHub those files at all?**
-  - **TODO REFACTOR AUTHORIZATIONLEVEL WITH A BOOLEAN ISADMIN**
-  - **TODO GIVE 5MB OF STORAGE OR SOME OTHER SMALL AMOUNT TO THE SERVER FOLDER, SO THAT IT CAN KEEP ALL INFO ABOUT THE USERS, AND THE CERTIFICATE**
-  - **TODO IMPLEMENT CERTIFICATES**
-  - **TODO ADD A WAY FOR THE SERVER AND CLIENT TO PROCESS AND SEND A MESSAGE.**
-  - **TODO IF THERE IS NOT ENOUGH STORAGE, THEN IN THE DATA SPECIFY HOW MUCH DATA IS ALREADY OCCUPIED, HOW MUCH IS ALLOCATED, AND HOW MUCH IT NEEDS TO FREE TO STORE THAT FILE**
-  - **TODO IN THE LIST_FILES_AND_DIRECTORIES ALSO SPECIFY THE SIZE OF EACH FILE**
-  - **TODO ADD A WAY TO ASK THE SERVER HOW MUCH STORAGE IS LEFT**
-  - **TODO FINISH THE CLIENT KEY SECTION OF THE HEADER TITLES' TABLE**
-  - **TODO ENSURE THE SENT KEY ON FIRST CONNECTION IS OF THE CORRECT FORMAT**
-  - **TODO THERE IS A BETTER WAY TO POINT OUT THE STRUCTURE OF THE MESSAGE. SEE "TCP HEADER FORMAT" IMAGES ON THE INTERNET**
-  - **TODO WHAT the raw data length HAS TO BE KEPT IN A `BigInteger` BECAUSE INT IS LIMITED TO 2 BILLION, WHICH IN BYTES IS 2 GIGS: BUG**
-  - **TODO: IMPLEMENT ON THE CONSOLE a way to generate a new certificate**
-  - **TODO IMPLEMENT a way to limit the storage of a user**
-  - **TODO FIGURE OUT HOW TO DO SYNCHRONIZED CONCURRENCY**
-  - **TODO List_files_and_directories deve funzionare sulla cartella in cui si è ora, non su una cartella specificata**
-  - **TODO DOCUMENT AND IMPLEMENT THE PUBLIC KEY OF THE CLIENT AND OF THE SERVER'S STRUCTURE BY PROTOCOL**
-  - **TODO UPDATE CLIENT_KEY WITH PUBLIC KEY IN DOCUMENTATION and implementation**
 
+<br>
+<br>
+
+### Console
+- **TODO: IMPLEMENT ON THE CONSOLE a way to generate a new certificate**
+- **TODO ADD A WAY FOR THE SERVER AND CLIENT TO PROCESS AND SEND A MESSAGE.**
+- **TODO ADD A WAY TO NAVIGATE THROUGH FILES WITH A CLIENT**
+<br>
+<br>
+
+### Concurrecy
+- **TODO FIGURE OUT HOW TO DO SYNCHRONIZED CONCURRENCY**
+<br>
+<br>
+
+### Files and storage
+- **TODO IMPLEMENT a way to limit the storage of a user**
+- **TODO List_files_and_directories deve funzionare sulla cartella in cui si è ora, non su una cartella specificata**
+- **TODO GIVE 5MB OF STORAGE OR SOME OTHER SMALL AMOUNT TO THE SERVER FOLDER, SO THAT IT CAN KEEP ALL INFO ABOUT THE USERS, AND THE CERTIFICATE**
+- **TODO THINK OF WHAT HAPPENS IF THERE IS NOT ENOUGH STORAGE IN THE SERVER TO STORE THE FILES: WILL IT continue accepting the input? What will it do with the rest of the received input? will it throw it away? what will it do with the file it started writing in its memory? ALSO MEMORY COULD BE SUFFICIENT AT THE START OF THE REQUEST BUT COULD NOT BECOME SUFFICIENT AS THE DATA IS SENT, SO YOU HAVE TO SEND A NOT_SUFFICIENT_STORAGE MESSAGE IN THAT SITUATION, TOO, AND ELIMINATE THE FILES THAT WERE GENERATING TODO THINK OF WHAT HAPPENS IF THERE IS NOT ENOUGH STORAGE IN THE SERVER TO STORE THE FILES: WILL IT continue accepting the input? What will it do with the rest of the received input? will it throw it away? what will it do with the file it started writing in its memory?**
+- **TODO TO KEEP THE ACTIVE MAP OF CLIENTS AND THEIR KEYS, USE A THREAD SAFE IMPLEMENTATION OF MAP**
+<br>
+<br>
+
+### Protocol
+- **TODO WHAT the raw data length HAS TO BE KEPT IN A `BigInteger` BECAUSE INT IS LIMITED TO 2 BILLION, WHICH IN BYTES IS 2 GIGS: BUG**
+- **TODO ADD A WAY TO ASK THE SERVER HOW MUCH STORAGE IS LEFT**
+- **TODO FINISH THE PUBLIC_KEY SECTION OF THE HEADER TITLES' TABLE**
+- **TODO ENSURE THE SENT KEY ON FIRST CONNECTION IS OF THE CORRECT FORMAT**
+- **TODO IMPLEMENT CERTIFICATES**
+- **TODO IF THERE IS NOT ENOUGH STORAGE, THEN IN THE DATA SPECIFY HOW MUCH DATA IS ALREADY OCCUPIED, HOW MUCH IS ALLOCATED, AND HOW MUCH IT NEEDS TO FREE TO STORE THAT FILE**
+- **TODO I WANT TO USE BASE85 ENCODING TO TRANSMIT DATA, IMPLEMENT**
+- **TODO CHANGE THE RAW DATA MEASUREMENT, USE IT ONLY FOR WHEN POSTING FILES OR FOLDERS, FOR SIGNALING THE END OF THE MESSAGE ENCODE IT IN BASE 85 and use Constants.MESSAGE_END_SEPARATOR**
+- **TODO CHANGE THE SEPARATOR OF THE VARIOUS FIELDS OF THE MESSAGE WITH ONLY ONE; AND ONE TO SEPARATE IT FROM THE FILE**
+- **TODO UPDATE THE DOCUMENTATION AND IMPLEMENTATION TO HAVE A REGEX WHERE ALL FIELDS OF THE HEADER ARE SEPARATED BY |**
+- **TODO CHANGE DOCUMENTATION TO SAY THAT PUBLIC_KEY IS USED BY THE CLIENT TO SEND ITS KEY**
+- **TODO UPDATE DOCUMENTATION TO SAY SERVER AND CLIENT ARE COMMUNICATING WITH BASE85 ENCODED DATA FOR ALL RAW DATA TRANSMISSIONS**
+- **TODO UPDATE DOCUMENTATION SO THAT ALL REFERENCES OF MESSAGE FIELDS SEPARATORS ARE REPLACED BY MESSAGE_HEADER_FIELDS_SEPARATOR in fredver.constants.Constants**
+<br>
+<br>
+
+### User management
+- **TODO REFACTOR AUTHORIZATIONLEVEL WITH A BOOLEAN ISADMIN**
 <br>
 <br>
 <br>
@@ -40,6 +63,7 @@ This project supports full JavaDoc documentation, so feel free to consult it.<br
 <br>
 The documention in this file is comprehensive and aims to have enough detail, so that one could run with it and make their own implementation.<br>
 If something is unclear, please do feel free to contribute in any way you see fit.
+
 ## Purpose
 This client/server application is a media server and a passion project, which aims to repurpose an old phone to act as a cloud (i know it's not technically a cloud because it's not distributed) for myself. This doesn't spawn from a practical need of such a device, but rather from a craving for an applied project, and this seems to be the coolest project i could come up with.
 <br>
@@ -53,13 +77,12 @@ To ensure a connection doesn't stay open after an abrupt crash from the other si
 <br>
 <br>
 ## Security
-I use `Socket` to ensure a secure communication, the server using an implementation of a self-signed certificate, so you have to know the server administrator and ask him to give you the certificate verification information. This is to protect the server from eavesdropping and MITM attacks, making all connections private. No need for a `SSLSocket`, since endpoint encryption in implemented manually in the certificat itself, which is simply a public/private key pair. See the [First connection](#first-connection) section<br>
+I use `Socket` to ensure a secure communication, the server using an implementation of a self-signed certificate, so you have to know the server administrator and ask him to give you the certificate verification information. This is to protect the server from eavesdropping and MITM attacks, making all connections private. No need for a `SSLSocket`, since endpoint encryption in implemented manually in the certificate itself, which is simply a public/private key pair. See the [First connection](#first-connection) section<br>
 <br>
 I don't even want to think about implementing a defense against DDoS attacks, and that is mainly for these reasons:
   - It requires cutting edge implementations of complex technologies, out of the bugdget of this project;
   - Data is privately transported between client and server, so no hacker can read it, and that is what matters. If this project will expand to the point that it will be used to run important services that could be the object of an attack, then the appropriate security measures will be surely implemented.
 To make a server generate a new certificate, a message with header title [`NEW_CERTIFICATE`](ServerTelefono/src/fredver/ioutils/HeaderTitle.java) is sent (see the [Header titles](#header-titles) section), and an answer with the new key is sent. At restarting, the server will use the new key.
-
 
 <br>
 <br>
@@ -69,24 +92,25 @@ The server is installed in a certain folder, which is the folder where the execu
 
 ## Custom protocol
 In [fredver.ioutils](ServerTelefono/src/fredver/ioutils) package there is the implementation of the classes used for my own protocol.
+
 ### First connection
 On first connection of the client with the server, a session key pair is generated, and stored.
 Then:
-  1. A message with header title [`CLIENT_KEY`](ServerTelefono/src/fredver/ioutils/HeaderTitle.java) is sent, with Header body its public key (See the [Header titles](#header-titles) section) for the server to use by encrypting messages
-  2. The server reads the message, takes the Client key, and stores it in its map of public keys associated with socket connections. 
+  1. A message with header title [`PUBLIC_KEY`](ServerTelefono/src/fredver/ioutils/HeaderTitle.java) is sent, with Header body its public key (See the [Header titles](#header-titles) section) for the server to use by encrypting messages
+  2. The server reads the message, takes the `PUBLIC_KEY`, and stores it in its map of public keys associated with socket connections. 
 ### Structure 
-To have a formal definition of what is a valid message, it has to match this regex:
+To have a formal definition of what is a valid message, it has to match this regex: **TODO UPDATE THE REGEX**
 ```
-^([a-fA-F0-9]{32})-([0-9]{1,3});([^;:\|]{1,50}):([^;:\|]{1,4096})\|(.+)$
+^([a-fA-F0-9]{32})\|([0-9]{1,3})\|([^|]{1,50})\|([^|]{1,4096})\|(.+)$
 ```
-Which represents none other than a string structured like this: 
-```
-(this is a 32 character hexadecimal UUID)-(1 to three numbers, but not zero or any leangth);(1 to 50 characters of header title):(1 to 4096 character of header body)|(whatever length of raw data)
-```
-
-Each message is identified by a UUID, that, if to send the message it is:
-  - The user: then it's a radomly generated 32 hexadecimal string;
-  - The server: the UUID of the message from the client it is responding to.
+Which represents none other than a string structured, in the order the fields appear, separated by the [`MESSAGE_HEADER_FIELDS_SEPARATOR`](ServerTelefono/src/fredver/constants/Constants.java), like this: 
+|Field name|Represented information's type|Represented information's size|Description|
+|---|---|---|---|
+|UUID|Hexadecimal string|Exactly 32 characters|An UUID of the message, for the server to respond to exact requests, by putting as the message's UUID the one of the client's request.|
+|Raw data length|Number|1 to 15 digits|To indicate the size of the raw data section of the message, used to determine if there is enough storage to hold a file or folder before sending|
+|Header title|String|1 to 50 characters|To indicate the nature of the message, choosing from header titles as specified in the [`HeaderTitle`](ServerTelefono/src/fredver/ioutils/HeaderTitle.java) enum|
+|Header body|String|1 to 4096 characters|To specify information about what the message is about. Example: if the header title was `PATH_OPERATION`, then the header body could be [`HEADER_BODY_RMDIR(ServerTelefono/src/fredver/ioutils/Header.java)|
+|Raw data|Base85 encoded byte stream|The maximum number of bytes representable with the maximum number of digits of the field "Raw data length"|To send raw data through the connection, as all other communication, like metadata, is done in the header|
 
 <br>
 The header body is of a maximum of 4096 characters because that's the max path of linux, and the header body is used, at its max length, to represent file paths.<br>
@@ -102,7 +126,7 @@ There can be only a header, and it has to have its their title match one of the 
 Each message it is sent in mind with the fact that the user is currently in a specific directory, so, for example, if a message with [`LIST_FILES_AND_DIRECTORIES`](ServerTelefono/src/fredver/ioutils/HeaderTitle.java) header is sent, then it will list all the files and directories in that specific directory.
 
 ### Receiving and sending files
-if the server or the client are communicating raw file data, base85 encoding of the files data is used.<br>
+When the server or the client are communicating raw data, base85 encoding of the files data is used.<br>
 Why? Because sending raw data does not leave free characters to use as delimiters to differentiate between the different files' data and filenames, when transmitting multiple of them with the same message.<br>
 <br>
 Then why not Base64?<br>
