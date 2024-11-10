@@ -6,6 +6,8 @@ import fredver.errorhandling.CheckedIllegalArgumentException;
 
 public class Message {
 	
+	public static char MESSAGE_START = '[' IMPLEMENT THIS IN MESSAGE STRUCTURE
+	
 	private String content;
 	private Header header;
 	

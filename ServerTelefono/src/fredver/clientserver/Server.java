@@ -18,6 +18,7 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.SSLSocket;
 
 import fredver.constants.Constants;
+import fredver.crypto.PublicKey;
 
 import javax.net.ssl.SSLServerSocketFactory;
 
