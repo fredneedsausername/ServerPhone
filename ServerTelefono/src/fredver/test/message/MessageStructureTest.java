@@ -3,7 +3,7 @@ package fredver.test.message;
 public class MessageStructureTest {
 
 	public static void main(String[] args) {
-		String regex = "^([a-fA-F0-9]{32})-([0-9]{1,15});([^;:\\|]{1,50}):([^;:\\|]{1,4096})\\|(.+)$";
+		String regex = "^([a-fA-F0-9]{32})\\|([0-9]{1,15})\\|([^|]{1,50})\\|([^|]{1,4096})\\|(.+)$";
 		
 		// all strings not hexadecimal and digit
 		String test1 = "hello-test;hello:lol|hehe";
@@ -15,7 +15,7 @@ public class MessageStructureTest {
 		String test5 = "aaabbbcccaaabbbcccaaabbbcccaaabb-111;LOLOLOLOLOLO:POPOPOPOPOPO|KOKOKOKOKO";
 		
 		// correct format with leading or up to 2 trailing zeros
-		String test6 = "aaabbbcccaaabbbcccaaabbbcccaaabb-11100;LOLOLOLOLOLO:POPOPOPOPOPO|KOKOKOKOKO";
+		String test6 = "aaabbbcccaaabbbcccaaabbbcccaaabb|11100|LOLOLOLOLOLO|POPOPOPOPOPO|KOKOKOKOKO";
 		String test7 = "aaabbbcccaaabbbcccaaabbbcccaaabb-0000111;LOLOLOLOLOLO:POPOPOPOPOPO|KOKOKOKOKO";
 		
 		

@@ -12,9 +12,9 @@ public class Constants {
 	
 	public static final char FILE_NAME_AND_FILE_DATA_SEPARATOR = '@'; // not used in base85 encoding, which is used to send data of file names and data
 	public static final char FILE_DATA_AND_NEXT_FILE_NAME_SEPARATOR = '^'; // not used in base85 encoding, which is used to send data of file names and data
-	public static final char MESSAGE_HEADER_TITLE_AND_BODY_SEPARATOR = ':';
-	public static final char MESSAGE_RAW_DATA_LENGTH_AND_HEADER_TITLE_SEPARATOR = ';';
-	public static final char MESSAGE_HEADER_BODY_AND_RAW_DATA_SEPARATOR = '|';
+	public static final char MESSAGE_END_SEPARATOR = '[';
+	public static final char MESSAGE_HEADER_FIELDS_SEPARATOR = '|';
+	
 	
 	public static final String SERVER_FOLDER_NAME = "Server";
 	public static final String SERVER_USERS_INFO_NAME = "UsersInfo.txt"; // To keep info like the allocated space and if they are an admin

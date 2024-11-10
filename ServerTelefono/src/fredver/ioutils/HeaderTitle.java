@@ -9,6 +9,7 @@ public enum HeaderTitle {
 	PATH_OPERATION,	IMPLEMENT THIS
 	
 	NEW_CERTIFICATE IMPLEMENT THIS
+	PUBLIC_KEY IMPLEMENT THIS
 	;
 	
 	public static HeaderTitle fromString(String input) throws CheckedIllegalArgumentException {
