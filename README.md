@@ -5,6 +5,8 @@
 **TODO THINK OF WHAT HAPPENS IF THERE IS NOT ENOUGH STORAGE IN THE SERVER TO STORE THE FILES: WILL IT continue accepting the input? What will it do with the rest of the received input? will it throw it away? what will it do with the file it started writing in its memory? ALSO MEMORY COULD BE SUFFICIENT AT THE START OF THE REQUEST BUT COULD NOT BECOME SUFFICIENT AS THE DATA IS SENT, SO YOU HAVE TO SEND A NOT_SUFFICIENT_STORAGE MESSAGE IN THAT SITUATION, TOO, AND ELIMINATE THE FILES THAT WERE GENERATING TODO THINK OF WHAT HAPPENS IF THERE IS NOT ENOUGH STORAGE IN THE SERVER TO STORE THE FILES: WILL IT continue accepting the input? What will it do with the rest of the received input? will it throw it away? what will it do with the file it started writing in its memory?**
 **TODO I WANT TO USE BASE85 ENCODING TO TRANSMIT DATA, UPDATE DOC AND IMPLEMENT**
 **TODO PROTECT FROM USERS TRYING TO ACCESS FOLDERS THAT ARE NOT THEIRS**
+**TODO ARE WRITING OPERATIONS BLOCKING, IN THE SENSE THAT IF SOMETHING IS WRITING TO A FILE, THE WHOLE APPLICATION WILL STAND STILL AND WAIT THAT OTHER PROCESS TO FINISH?**
+**TODO ADD A WAY TO NAVIGATE THROUGH FILES WITH A CLIENT**
 <br>
 **TODO REFACTOR AUTHORIZATIONLEVEL WITH A BOOLEAN ISADMIN**
 # ServerPhone
@@ -36,7 +38,8 @@ Certificates are generated using **TODO** technology<br>
 <br>
 I don't even have to think about implementing a defense against DDoS attacks, and that is mainly for these reasons:
   - It might require technologies that are too complicated to be studied and implemented, but i wouldn't know because i didn't study them;
-  - To the scope of this server, the only true danger there is is not having an encrypted connection if using the server to store sensitive data, because surely nobody is interested in actuating an attack just to stop the service on a random small media center. Anyways, i'm doing it for myself, and i know that i will not be subject to these kinds of attacks; if someone wants to use this too for their own needs, then they probably don't need a super-secure server, otherwise they would have probably chosen to use a different software
+  - To the scope of this server, the only true danger there is is not having an encrypted connection if using the server to store sensitive data, because surely nobody is interested in actuating an attack just to stop the service on a random small media center. Anyways, i'm doing it for myself, and i know that i will not be subject to these kinds of attacks; if someone wants to use this too for their own needs, then they probably don't need a super-secure server, otherwise they would have probably chosen to use a different software<br>
+To make a server generate a new Certificate, a message with header [`NEW_CERTIFICATE`](ServerTelefono/src/fredver/ioutils/HeaderTitle.java) is sent (see the [Header titles](#header-titles) section), and an answer with the new key is sent, at restarting the new key will be used. **TODO IMPLEMENT THIS**
 
 
 <br>
@@ -61,37 +64,36 @@ The raw-data-length information is used to differentiate between message and mes
 There can be only a header, and it has to have its their title match one of the titles' names specified by the [`HeaderTitle`](ServerTelefono/src/fredver/ioutils/HeaderTitle.java) enum. No field can ever not have a value, the default "non-value" is "null", as defined in [`Constants.NULL_VALUE`](ServerTelefono/src/fredver/constants/Constants.java)<br>
 Each message it is sent in mind with the fact that the user is currently in a specific directory, so, for example, if a message with [`LIST_FILES_AND_DIRECTORIES`](ServerTelefono/src/fredver/ioutils/HeaderTitle.java) header is sent, then it will list all the files and directories in that specific directory.
 
-### Data format in receiving and sending files
-if the server or the client are communicating raw file data, base85 encoding of the files data is used. Why? Because sending raw data does not leave free characters to use as delimiters to differentiate between the different files' data and filenames, when transmitting multiple of them with the same message. Then why not Base64? Because it adds padding, and this has the consequence that it will not be distinguishable from actual data, because it flows like a stream from one socket to the other. You obviously cannot load into memory the file in its whole to transmit it so that the server can load it all into memory and then revert it back to normal encoding, because that puts a memory burden that could not be supported by either the client or the server. Base85, also, reduces the space occupied by data, so that it is faster to transmit via sockets. This is the same optimization result of having a bigger buffer.
+### Receiving and sending files
+if the server or the client are communicating raw file data, base85 encoding of the files data is used. Why? Because sending raw data does not leave free characters to use as delimiters to differentiate between the different files' data and filenames, when transmitting multiple of them with the same message. Then why not Base64? Because it adds padding, and this has the consequence that it will not be distinguishable from actual data, because it flows like a stream from one socket to the other. You obviously cannot load into memory the file in its whole to transmit it so that the server can load it all into memory and then revert it back to normal encoding, because that puts a memory burden that could not be supported by either the client or the server. Base85, also, reduces the space occupied by data, so that it is faster to transmit via sockets. This is the same optimization result of having a bigger buffer. **TODO ADD INFORMATION ABOUT FORMATTING OF MULTIPLE FILE MESSAGES**
 
 ### Header titles
 Here is a comprehensive table with all possible values header titles values, as defined in [`HeaderTitle`](ServerTelefono/src/fredver/ioutils/HeaderTitle.java), and how they are used based on if the server or client sends it.
 <br> **TODO UPDATE the table updating and completing** 
 There can be various answers in the body, they are all in [fredver.ioutils.Header](ServerTelefono/src/fredver/ioutils/Header.java) and are called `HEADER_BODY_*` where * can be anything, apart from [[`NULL_VALUE`](ServerTelefono/src/fredver/constants/Constants.java), in [fredver.constants.NULL_VALUE](ServerTelefono/src/fredver/constants/Constants.java).
 
+**TODO IMPLEMENT THE HEADER TITLE PATH_OPERATION, WHICH IS USED AS CD, RMDIR, DEL**
 |------|If client sends it|if server sends it|
 |:---:|:--- |:--- |
 ||**`LIST_FILES_AND_DIRECTORIES`**|**`LIST_FILES_AND_DIRECTORIES`**|
-|Header body:|The directory name to list the files of|It is a response from this same request from the client.<br>Possible values:<br>-`HEADER_BODY_GRANTED`<br>-`HEADER_BODY_INVALID_RAW_DATA_LENGTH`|
-|Raw data:|NULL_VALUE|if granted:<br>-The names of the files and directories, separated by [`Constants.FILENAME_AND_FILENAME_SEPARATOR`](ServerTelefono/src/fredver/constants/Constants.java)<br><br>else:<br>-`NULL_VALUE`|
+|Header body:|The directory name to list the files of|It is a response from this same request from the client.<br>Possible values:<br>-`HEADER_BODY_GRANTED`<br>-`HEADER_BODY_INVALID_RAW_DATA_LENGTH`<br>-`HEADER_BODY_NOT_AUTHORIZED`|
+|Raw data:|NULL_VALUE|if granted:<br>-The names of the files and directories, as specified in the [Receiving and sending files](#receiving-and-sending-files) section<br><br>else:<br>-`NULL_VALUE`|
 |---|---|---|
 ||**`GET_FILE_OR_FOLDER`**|**`GET_FILE_OR_FOLDER`**|
-|Header body:|The directory or file name to get the files of|It is a response from this same request from the client.<br>Possible values:<br>-`HEADER_BODY_GRANTED`<br>-`HEADER_BODY_INVALID_RAW_DATA_LENGTH`|
-|Raw data:|NULL_VALUE|if granted:<br>-The data of the specified file or folder<br><br>else:<br>-NULL_VALUE|
+|Header body:|The directory or file name to get the files of|It is a response from this same request from the client.<br>Possible values:<br>-`HEADER_BODY_GRANTED`<br>-`HEADER_BODY_INVALID_RAW_DATA_LENGTH`<br>-`HEADER_BODY_NOT_AUTHORIZED`|
+|Raw data:|`NULL_VALUE`|if granted:<br>-The data of the specified file or folder as specified in the [Receiving and sending files](#receiving-and-sending-files) section<br><br>else:<br>-`NULL_VALUE`|
 |---|---|---|
 ||**`PUBLISH_FILE_OR_FOLDER`**|**`PUBLISH_FILE_OR_FOLDER`**|
-|Header body:||It is a response from this same request from the client.<br>Possible values:<br>-`HEADER_BODY_GRANTED`<br>-`HEADER_BODY_NOT_ENOUGH_STORAGE`<br>-<br>`HEADER_BODY_INVALID_RAW_DATA_LENGTH`|
-|Raw data:|||
+|Header body:|Folder name if there are multiple files and folders, File name otherwise|It is a response from this same request from the client.<br>Possible values:<br>-`HEADER_BODY_GRANTED`<br>-`HEADER_BODY_NOT_ENOUGH_STORAGE`<br>-`HEADER_BODY_INVALID_RAW_DATA_LENGTH`<br>-`HEADER_BODY_NOT_AUTHORIZED`|
+|Raw data:|The data of the files and folders to publish, as specified in the [Receiving and sending files](#receiving-and-sending-files) section|`NULL_VALUE`|
 |---|---|---|
-||**`NEW_TLS_CERTIFICATE`**|**`NEW_TLS_CERTIFICATE`**|
-|Header body:|||
-|Raw data:|||
-
-**TODO THINK OF WHAT HAPPENS IF THERE IS NOT ENOUGH STORAGE IN THE SERVER TO STORE THE FILES: WILL IT continue accepting the input? What will it do with the rest of the received input? will it throw it away? what will it do with the file it started writing in its memory?**|**TODO THINK OF WHAT HAPPENS IF THERE IS NOT ENOUGH STORAGE IN THE SERVER TO STORE THE FILES: WILL IT continue accepting the input? What will it do with the rest of the received input? will it throw it away? what will it do with the file it started writing in its memory?**|
-
-
-**TODO RETURN VALUES DEL CLIENT E DEL SERVER SE VENGONO MANDATI QUESTI MESSAGGI**
-
+||**`NEW_CERTIFICATE`**|**`NEW_CERTIFICATE`**|
+|Header body:|NULL_VALUE|Possible values:<br>-`HEADER_BODY_GRANTED`<br>-`HEADER_BODY_NOT_AUTHORIZED`|
+|Raw data:|NULL_VALUE|If granted:<br>-The new certificate<br><br>else:<br>-NULL_VALUE|
+|---|---|---|
+||**`PATH_OPERATION`**|**`PATH_OPERATION`**|
+||||
+||||
 
 <br>
 <br>
@@ -123,6 +125,12 @@ The client is able to:
   - get files and directories
   - upload files and directories
   - create files and directories
+
+<br>
+<br>
+
+## Storage
+Each user will have its partition, a folder with their name as name of the folder. If, for any operation, storage is not enough, it will delete the data that was writing **TODO THINK OF WHAT HAPPENS IF THERE IS NOT ENOUGH STORAGE IN THE SERVER TO STORE THE FILES: WILL IT continue accepting the input? What will it do with the rest of the received input? will it throw it away? what will it do with the file it started writing in its memory?**
 
 <br>
 <br>
