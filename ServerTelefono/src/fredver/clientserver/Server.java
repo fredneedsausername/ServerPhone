@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -24,8 +25,8 @@ public class Server {
 	
 	private static Scanner terminalScanner = new Scanner(System.in);
 	private static boolean isServerStarted = false; // represents if the server is turned on or off
-	private static SSLServerSocket serverSocket;
-	private static Set<SSLSocket> connections = new HashSet<>();
+	private static ServerSocket serverSocket;
+	private static Map<Socket, PublicKey> connections = new HashMap<>();
 	
 	public static void main(String[] args) {
 		 administrationConsole();	
@@ -242,7 +243,7 @@ public class Server {
 	}
 	
 	private static void turnOffServer() throws IOException { IMPLEMENT BETTER CLOSING OF SOCKETS WITH A LIST OF EXCEPTION THROWN
-		for(SSLSocket s : connections) {
+		for(Socket s : connections) {
 			connections.remove(s);
 			s.close();
 			isServerStarted = false;
@@ -251,9 +252,8 @@ public class Server {
 	}
 	
 	private static void turnOnServer() throws IOException {			
-			serverSocket = (SSLServerSocket) 
-					( (SSLServerSocketFactory) 
-							SSLServerSocketFactory.getDefault() ).createServerSocket();
+			serverSocket = new ServerSocket();
 		serverSocket.bind(new InetSocketAddress("0.0.0.0", Constants.SERVER_PORT_NUMBER));
+		isServerStarted = true;
 	}
 }

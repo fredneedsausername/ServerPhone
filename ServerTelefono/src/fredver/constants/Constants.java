@@ -8,12 +8,17 @@ public class Constants {
 	public static final int HEATBEAT_INTERVAL = 5_000; // 5 seconds
 	public static final int UUID_LENGTH = 32; // 32 hexadecimal numbers
 	public static final int MAX_PATH = 4096; // max linux path length, which has the longest max path length
-	public static final String NULL_VALUE = "null";
+	public static final int DEFAULT_SERVER_FOLDER_SIZE = 5 * 1024 * 1024; // 5MBs to keep all the user info, keys, and other server stuff
 	
 	public static final char FILE_NAME_AND_FILE_DATA_SEPARATOR = '@'; // not used in base85 encoding, which is used to send data of file names and data
-	public static final char FILE_DATA_END = '^'; // not used in base85 encoding, which is used to send data of file names and data
+	public static final char FILE_DATA_AND_NEXT_FILE_NAME_SEPARATOR = '^'; // not used in base85 encoding, which is used to send data of file names and data
 	public static final char MESSAGE_HEADER_TITLE_AND_BODY_SEPARATOR = ':';
 	public static final char MESSAGE_RAW_DATA_LENGTH_AND_HEADER_TITLE_SEPARATOR = ';';
 	public static final char MESSAGE_HEADER_BODY_AND_RAW_DATA_SEPARATOR = '|';
+	
+	public static final String SERVER_FOLDER_NAME = "Server";
+	public static final String SERVER_USERS_INFO_NAME = "UsersInfo.txt"; // To keep info like the allocated space and if they are an admin
+	public static final String SERVER_USERS_FOLDER_NAME = "Users";
+	public static final String NULL_VALUE = "null";
 	
 }
