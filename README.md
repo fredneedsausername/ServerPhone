@@ -7,8 +7,10 @@
 **TODO PROTECT FROM USERS TRYING TO ACCESS FOLDERS THAT ARE NOT THEIRS**
 **TODO ARE WRITING OPERATIONS BLOCKING, IN THE SENSE THAT IF SOMETHING IS WRITING TO A FILE, THE WHOLE APPLICATION WILL STAND STILL AND WAIT THAT OTHER PROCESS TO FINISH?**
 **TODO ADD A WAY TO NAVIGATE THROUGH FILES WITH A CLIENT**
-<br>
+**TODO should i add eclipse configuration files in the .gitignore? Are they necessary for java to work? Are they specific to eclipse? How to compensate for people that use a different ide, and need those configurations files, too? Is there a way to not publish on GitHub those files at all?**
 **TODO REFACTOR AUTHORIZATIONLEVEL WITH A BOOLEAN ISADMIN**
+**TODO ADD A UUID TO EVERY MESSAGE SO THAT IT DOESN'T GO CONFUSED, UPDATE TABLE OF HEADER TITLES TO, INSTEAD OF HAVING AS HEADER TITLE A REQUEST, HAVE THE UUID OF THE REQUEST**
+<br>
 # ServerPhone
 _Believe it or not, this is the third time i delete this repo because of configurations issues, which took me a day to sort out.<br>
 I finally managed to publish my work here, i will keep you posted here._<br>
@@ -51,17 +53,28 @@ The server is installed in a certain folder, which is the folder where the execu
 ## Custom protocol
 In [fredver.ioutils](ServerTelefono/src/fredver/ioutils) package there is the implementation of the classes used for my own protocol.
 ### Structure 
-To have a formal definition of what is a valid message, it has to match this regex: 
+To have a formal definition of what is a valid message, it has to match this regex:
+**TODO PUT A UUID**
 ```
-^([^;]+);([^:]+):([^|]+)\|(.+)$
+^([a-fA-F0-9]{32})-([0-9]{1,3});([^;:\|]{1,50}):([^;:\|]{1,4096})\|(.+)$
 ```
 Which represents none other than a string structured like this:
 ```
-raw-data-length;header-title:header-body|raw-data
+(this is a 32 character hexadecimal UUID)-(1 to three numbers, but not zero or any lea);(1 to 50 characters of header title):(1 to 4096 character of header body)|(whatever length of raw data)
 ```
+
+Each message is identified by a UUID, that, if to send the message it is:
+  - The user: then it's a radomly generated 32 hexadecimal string;
+  - The server: the UUID of the message from the client it is responding to.
+
+<br>
+The header body is of a maximum of 4096 characters because that's the max path of linux, and the header body is used, at its max length, to represent file paths.<br>
+<br>
 The raw-data-length information is used to differentiate between message and message, so that it reads up to the message's length and that's the data.
-<br>**TODO WHAT IT HAS TO BE KEPT IN A `BigInteger` BECAUSE INT IS LIMITED TO 2 BILLION, WHICH IN BYTES IS 2 GIGS: BUG**<br>
-There can be only a header, and it has to have its their title match one of the titles' names specified by the [`HeaderTitle`](ServerTelefono/src/fredver/ioutils/HeaderTitle.java) enum. No field can ever not have a value, the default "non-value" is "null", as defined in [`Constants.NULL_VALUE`](ServerTelefono/src/fredver/constants/Constants.java)<br>
+<br> **TODO WHAT IT HAS TO BE KEPT IN A `BigInteger` BECAUSE INT IS LIMITED TO 2 BILLION, WHICH IN BYTES IS 2 GIGS: BUG** <br>
+<br>
+There can be only a header, and it has to have its their title match one of the titles' names specified by the [`HeaderTitle`](ServerTelefono/src/fredver/ioutils/HeaderTitle.java) enum. No field can ever not have a value, the default "non-value" is "null", as defined in [`Constants.NULL_VALUE`](ServerTelefono/src/fredver/constants/Constants.java).**TODO BUG WHAT HAPPENS IF IT IS NULL**<br>
+<br>
 Each message it is sent in mind with the fact that the user is currently in a specific directory, so, for example, if a message with [`LIST_FILES_AND_DIRECTORIES`](ServerTelefono/src/fredver/ioutils/HeaderTitle.java) header is sent, then it will list all the files and directories in that specific directory.
 
 ### Receiving and sending files
@@ -70,7 +83,7 @@ if the server or the client are communicating raw file data, base85 encoding of 
 ### Header titles
 Here is a comprehensive table with all possible values header titles values, as defined in [`HeaderTitle`](ServerTelefono/src/fredver/ioutils/HeaderTitle.java), and how they are used based on if the server or client sends it.
 <br> **TODO UPDATE the table updating and completing** 
-There can be various answers in the body, they are all in [fredver.ioutils.Header](ServerTelefono/src/fredver/ioutils/Header.java) and are called `HEADER_BODY_*` where * can be anything, apart from [[`NULL_VALUE`](ServerTelefono/src/fredver/constants/Constants.java), in [fredver.constants.NULL_VALUE](ServerTelefono/src/fredver/constants/Constants.java).
+There can be various answers in the body, they are all in [fredver.ioutils.Header](ServerTelefono/src/fredver/ioutils/Header.java) and are called `HEADER_BODY_*` where * can be anything, or [fredver.constants.NULL_VALUE](ServerTelefono/src/fredver/constants/Constants.java).
 
 **TODO IMPLEMENT THE HEADER TITLE PATH_OPERATION, WHICH IS USED AS CD, RMDIR, DEL**
 |------|If client sends it|if server sends it|
@@ -92,8 +105,8 @@ There can be various answers in the body, they are all in [fredver.ioutils.Heade
 |Raw data:|NULL_VALUE|If granted:<br>-The new certificate<br><br>else:<br>-NULL_VALUE|
 |---|---|---|
 ||**`PATH_OPERATION`**|**`PATH_OPERATION`**|
-||||
-||||
+|Header body:|The operation to be executed. Possible values:<br>-||
+|Raw data:|||
 
 <br>
 <br>
