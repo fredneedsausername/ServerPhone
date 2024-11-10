@@ -12,7 +12,9 @@ public class Header {
 	public static final String HEADER_BODY_NOT_AUTHORIZED = "NOT_AUTHORIZED";
 	public static final String HEADER_BODY_NON_EXISTENT_FOLDER = "NON_EXISTENT_FOLDER";
 	public static final String HEADER_BODY_INVALID_RAW_DATA_LENGTH = "INVALID_RAW_DATA_LENGTH"; DA MANDARE SE IL RAW DATA LENGTH è ILLEGALE (0 O < 0 O > 999 nel senso che il raw data length non si limita ai primi tre caratteri)
-			
+	
+	
+	
 	/**
 	 * 
 	 * @param headerTitle The title of the header

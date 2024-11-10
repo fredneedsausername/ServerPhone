@@ -6,6 +6,8 @@ public class Constants {
 	public static final int SOCKET_BUFFER_SIZE = 512 * 1024; // 512KB for socket buffer // Socket buffer size can never be less than the metadata size
 	public static final int READ_TIMEOUT = 15_000; // 15 seconds
 	public static final int HEATBEAT_INTERVAL = 5_000; // 5 seconds
+	public static final int UUID_LENGTH = 32; // 32 hexadecimal numbers
+	public static final int MAX_PATH = 4096; // max linux path length, which has the longest max path length
 	public static final String NULL_VALUE = "null";
 	
 	public static final char FILE_NAME_AND_FILE_DATA_SEPARATOR = '@'; // not used in base85 encoding, which is used to send data of file names and data
