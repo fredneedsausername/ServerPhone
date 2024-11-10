@@ -3,9 +3,8 @@
 > Documentation is only partly completed, there might be changes to existing parts and surely new things will be added, especially those marked with **TODO**
 
 # List of TODOs
-For your pleasure, here is a list of todos:  
-  - **TODO should i add eclipse configuration files in the .gitignore? Are they necessary for java to work? Are they specific to eclipse? How to compensate for people that use a different ide, and need those configurations files, too? Is there a way to not publish on GitHub those files at all?**
-
+For your pleasure, here is a list of todos:<br>
+**TODO FIGURE OUT HOW TO BUILD THE PROJECT ON A DIFFERENT DEVICE**
 <br>
 <br>
 
@@ -13,6 +12,7 @@ For your pleasure, here is a list of todos:
 - **TODO: IMPLEMENT ON THE CONSOLE a way to generate a new certificate**
 - **TODO ADD A WAY FOR THE SERVER AND CLIENT TO PROCESS AND SEND A MESSAGE.**
 - **TODO ADD A WAY TO NAVIGATE THROUGH FILES WITH A CLIENT**
+- **TODO ADD, FOR THE ADMIN, TO SEE HOW MUCH MEMORY IS ALLOCATED TO A USER**
 <br>
 <br>
 
@@ -25,25 +25,23 @@ For your pleasure, here is a list of todos:
 - **TODO IMPLEMENT a way to limit the storage of a user**
 - **TODO List_files_and_directories deve funzionare sulla cartella in cui si è ora, non su una cartella specificata**
 - **TODO GIVE 5MB OF STORAGE OR SOME OTHER SMALL AMOUNT TO THE SERVER FOLDER, SO THAT IT CAN KEEP ALL INFO ABOUT THE USERS, AND THE CERTIFICATE**
-- **TODO THINK OF WHAT HAPPENS IF THERE IS NOT ENOUGH STORAGE IN THE SERVER TO STORE THE FILES: WILL IT continue accepting the input? What will it do with the rest of the received input? will it throw it away? what will it do with the file it started writing in its memory? ALSO MEMORY COULD BE SUFFICIENT AT THE START OF THE REQUEST BUT COULD NOT BECOME SUFFICIENT AS THE DATA IS SENT, SO YOU HAVE TO SEND A NOT_SUFFICIENT_STORAGE MESSAGE IN THAT SITUATION, TOO, AND ELIMINATE THE FILES THAT WERE GENERATING TODO THINK OF WHAT HAPPENS IF THERE IS NOT ENOUGH STORAGE IN THE SERVER TO STORE THE FILES: WILL IT continue accepting the input? What will it do with the rest of the received input? will it throw it away? what will it do with the file it started writing in its memory?**
+- **TODO If the storage to accept the received data becomes insufficient during the receiving operation, send a message (TODO: IMPLEMENT THIS) to say that the storage is not enough, then start a timer of FILE_DISCARDING_TIMEOUT milliseconds, start discarding all characters until you reach MESSAGE_END_SEPARATOR, if you don't reach it in time for the timer to expire then close the connection with the client who sent the file too big. This is to protect from attackers sending a file too big, then not sending the message ending character but sending random junk data to keep the connection alive**
+- **TODO ALSO MEMORY COULD BE SUFFICIENT AT THE START OF THE REQUEST BUT COULD NOT BECOME SUFFICIENT AS THE DATA IS SENT, SO YOU HAVE TO SEND A NOT_SUFFICIENT_STORAGE MESSAGE IN THAT SITUATION, TOO, AND ELIMINATE THE FILES THAT WERE GENERATING**
 - **TODO TO KEEP THE ACTIVE MAP OF CLIENTS AND THEIR KEYS, USE A THREAD SAFE IMPLEMENTATION OF MAP**
+- **CONSIDER THAT YOU CANNOT CALCULATE HOW MUCH STORAGE IS BEING USED BY SERVER BY HOW MUCH STORAGE IS ALLOCATED, BECAUSE THERE ARE SITUATIONS WHERE LESS IS ALLOCATED THAN WHAT IS OCCUPIED**
+- **TODO MANAGE INSTALLATION OF SERVER**
+- 
 <br>
 <br>
 
 ### Protocol
-- **TODO WHAT the raw data length HAS TO BE KEPT IN A `BigInteger` BECAUSE INT IS LIMITED TO 2 BILLION, WHICH IN BYTES IS 2 GIGS: BUG**
-- **TODO ADD A WAY TO ASK THE SERVER HOW MUCH STORAGE IS LEFT**
-- **TODO FINISH THE PUBLIC_KEY SECTION OF THE HEADER TITLES' TABLE**
+- **TODO IMPLEMENT AS FOLLOWS: the raw data length HAS TO BE KEPT IN A `BigInteger` BECAUSE INT IS LIMITED TO 2 BILLION, WHICH IN BYTES IS 2 GIGS: BUG**
 - **TODO ENSURE THE SENT KEY ON FIRST CONNECTION IS OF THE CORRECT FORMAT**
 - **TODO IMPLEMENT CERTIFICATES**
-- **TODO IF THERE IS NOT ENOUGH STORAGE, THEN IN THE DATA SPECIFY HOW MUCH DATA IS ALREADY OCCUPIED, HOW MUCH IS ALLOCATED, AND HOW MUCH IT NEEDS TO FREE TO STORE THAT FILE**
 - **TODO I WANT TO USE BASE85 ENCODING TO TRANSMIT DATA, IMPLEMENT**
-- **TODO CHANGE THE RAW DATA MEASUREMENT, USE IT ONLY FOR WHEN POSTING FILES OR FOLDERS, FOR SIGNALING THE END OF THE MESSAGE ENCODE IT IN BASE 85 and use Constants.MESSAGE_END_SEPARATOR**
-- **TODO CHANGE THE SEPARATOR OF THE VARIOUS FIELDS OF THE MESSAGE WITH ONLY ONE; AND ONE TO SEPARATE IT FROM THE FILE**
-- **TODO UPDATE THE DOCUMENTATION AND IMPLEMENTATION TO HAVE A REGEX WHERE ALL FIELDS OF THE HEADER ARE SEPARATED BY |**
-- **TODO CHANGE DOCUMENTATION TO SAY THAT PUBLIC_KEY IS USED BY THE CLIENT TO SEND ITS KEY**
-- **TODO UPDATE DOCUMENTATION TO SAY SERVER AND CLIENT ARE COMMUNICATING WITH BASE85 ENCODED DATA FOR ALL RAW DATA TRANSMISSIONS**
-- **TODO UPDATE DOCUMENTATION SO THAT ALL REFERENCES OF MESSAGE FIELDS SEPARATORS ARE REPLACED BY MESSAGE_HEADER_FIELDS_SEPARATOR in fredver.constants.Constants**
+- **TODO IMPLEMENTATION TO HAVE A REGEX WHERE ALL FIELDS OF THE HEADER ARE SEPARATED BY |**
+
+
 <br>
 <br>
 
@@ -88,44 +86,49 @@ To make a server generate a new certificate, a message with header title [`NEW_C
 <br>
 
 ## Installation
-The server is installed in a certain folder, which is the folder where the executable is located. To start up the server from another location please use a shortcut. Here it will keep information about its users, and the data.
+The server is installed in the folder where the executable is located. To start up the server from another location please use a shortcut. Here it will keep information about its users, and the data.
 
 ## Custom protocol
 In [fredver.ioutils](ServerTelefono/src/fredver/ioutils) package there is the implementation of the classes used for my own protocol.
 
 ### First connection
-On first connection of the client with the server, a session key pair is generated, and stored.
+On first connection of the client with the server, a session key pair is generated by the client, and stored for use during that session.
 Then:
-  1. A message with header title [`PUBLIC_KEY`](ServerTelefono/src/fredver/ioutils/HeaderTitle.java) is sent, with Header body its public key (See the [Header titles](#header-titles) section) for the server to use by encrypting messages
-  2. The server reads the message, takes the `PUBLIC_KEY`, and stores it in its map of public keys associated with socket connections. 
+  1. A message with header title [`PUBLIC_KEY`](ServerTelefono/src/fredver/ioutils/HeaderTitle.java) is sent using the already known server's public key for encryption, and the header body is the public key of the client (See the [Header titles](#header-titles) section) for the server to use by encrypting messages
+  2. The server reads the message, takes the `PUBLIC_KEY`, and stores it in its map of public keys associated with socket connections.
+
+Now the server and the client have established a secure bridge of connection that protects them from eavesdropping and MITM attacks.
+
 ### Structure 
-To have a formal definition of what is a valid message, it has to match this regex: **TODO UPDATE THE REGEX**
+To have a formal definition of what is a valid message, it has to match this regex:
 ```
-^([a-fA-F0-9]{32})\|([0-9]{1,3})\|([^|]{1,50})\|([^|]{1,4096})\|(.+)$
+^([a-fA-F0-9]{32});([0-9]{1,15});([^;]{1,50});([^;]{1,4096});(.+)$
 ```
+
 Which represents none other than a string structured, in the order the fields appear, separated by the [`MESSAGE_HEADER_FIELDS_SEPARATOR`](ServerTelefono/src/fredver/constants/Constants.java), like this: 
 |Field name|Represented information's type|Represented information's size|Description|
 |---|---|---|---|
 |UUID|Hexadecimal string|Exactly 32 characters|An UUID of the message, for the server to respond to exact requests, by putting as the message's UUID the one of the client's request.|
 |Raw data length|Number|1 to 15 digits|To indicate the size of the raw data section of the message, used to determine if there is enough storage to hold a file or folder before sending|
 |Header title|String|1 to 50 characters|To indicate the nature of the message, choosing from header titles as specified in the [`HeaderTitle`](ServerTelefono/src/fredver/ioutils/HeaderTitle.java) enum|
-|Header body|String|1 to 4096 characters|To specify information about what the message is about. Example: if the header title was `PATH_OPERATION`, then the header body could be [`HEADER_BODY_RMDIR(ServerTelefono/src/fredver/ioutils/Header.java)|
+|Header body|String|1 to 4096 characters|To specify information about what the message is about. Example: if the header title was `PATH_OPERATION`, then the header body could be [`HEADER_BODY_RMDIR`](ServerTelefono/src/fredver/ioutils/Header.java)|
 |Raw data|Base85 encoded byte stream|The maximum number of bytes representable with the maximum number of digits of the field "Raw data length"|To send raw data through the connection, as all other communication, like metadata, is done in the header|
 
+A message ends and a new one starts when [`MESSAGE_END_SEPARATOR`](ServerTelefono/src/fredver/constants/Constants.java) is reached. It is not put in the valid message's regex because the raw data can be several gigabytes of data, and it obviously won't be sent all at once, so in some cases there's no way to establish whether there is a message ending character or not.<br>
 <br>
 The header body is of a maximum of 4096 characters because that's the max path of linux, and the header body is used, at its max length, to represent file paths.<br>
 <br>
-The raw-data-length information is used to differentiate between message and message, so that it reads up to the message's length and that's the data.
-<br> 
-
+The raw-data-length information is used to know immediately upon sending a message if the server has enough storage to save the file. It serves no other purpose.<br>
 
 <br>
 <br>
-There can be only a header, and it has to have its their title match one of the titles' names specified by the [`HeaderTitle`](ServerTelefono/src/fredver/ioutils/HeaderTitle.java) enum. No field can ever not have a value, the default "non-value" is "null", as defined in [`Constants.NULL_VALUE`](ServerTelefono/src/fredver/constants/Constants.java). <br>
-<br>
+
+There can be only a header, and it has to have its their title match one of the titles' names specified by the [`HeaderTitle`](ServerTelefono/src/fredver/ioutils/HeaderTitle.java) enum. No field can ever not have a value, the default "non-value" is "null", as defined in [`Constants.NULL_VALUE`](ServerTelefono/src/fredver/constants/Constants.java).
 Each message it is sent in mind with the fact that the user is currently in a specific directory, so, for example, if a message with [`LIST_FILES_AND_DIRECTORIES`](ServerTelefono/src/fredver/ioutils/HeaderTitle.java) header is sent, then it will list all the files and directories in that specific directory.
+HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 
-### Receiving and sending files
+### Encoding of raw data
+
 When the server or the client are communicating raw data, base85 encoding of the files data is used.<br>
 Why? Because sending raw data does not leave free characters to use as delimiters to differentiate between the different files' data and filenames, when transmitting multiple of them with the same message.<br>
 <br>
@@ -166,9 +169,13 @@ There can be various answers in the body, they can be those defined in [fredver.
 |Header body:|The operation to be executed.<br>Possible values:<br>-`HEADER_BODY_CD`<br>-`HEADER_BODY_RMDIR`<br>-`HEADER_BODY_DEL`|It is a response from this same request.<br>Possible values:<br>-`HEADER_BODY_INVALID_HEADER_FORMAT`<br>-`HEADER_BODY_GRANTED`<br>-`HEADER_BODY_NOT_AUTHORIZED`<br>`HEADER_BODY_NON_EXISTENT_FOLDER`|
 |Raw data:|The file or folder name to be operated on|`NULL_VALUE`|
 |---|---|---|
-||**PUBLIC_KEY**|**PUBLIC_KEY**|
-|Header body:|The public key of the client, on first connection only (otherwise server sends error on socket and terminates connection), as specified in the [Structure](#structure) section|The public key of the server, as specified in the [Structure](#structure) section|
-|Raw data:|`NULL_VALUE`|`NULL_VALUE`|
+||**`PUBLIC_KEY`**|**`PUBLIC_KEY`**|
+|Header body:|`NULL_VALUE`|`NULL_VALUE`|
+|Raw data:|The public key of the client, on first connection only (otherwise server sends error on socket and terminates connection), as specified in the [Structure](#structure) section|The public key of the server, as specified in the [Structure](#structure) section|
+|---|---|---|
+||**`ASK_INFORMATION_TO_SERVER`**|**`ASK_INFORMATION_TO_SERVER`**|
+|Header body:|The type of information to ask.<br>Possible values:<br>-`HEADER_BODY_ASK_CURRENT_PATH`<br>-`HEADER_BODY_ASK_ALLOCATED_STORAGE_TO_THIS_USER`|It is a response from this same request.<br>Possible values:<br>-`HEADER_BODY_GRANTED`<br>-`HEADER_BODY_INVALID_HEADER_FORMAT`|
+|Raw data:|`NULL_VALUE`|If the header body was:<br>-`HEADER_BODY_ASK_CURRENT_PATH` then the absolute path to folder the user is currently in.<br>-`HEADER_BODY_ASK_ALLOCATED_STORAGE_TO_THIS_USER` then the bytes allocated to the user, then the [`ALLOCATED_STORAGE_INFORMATION_SEPARATOR`](ServerTelefono/src/fredver/constants/Constants.java), then the bytes the user is using currently, then the [`ALLOCATED_STORAGE_INFORMATION_SEPARATOR`](ServerTelefono/src/fredver/constants/Constants.java), then the remaining bytes|
 
 
 <br>
