@@ -4,6 +4,7 @@
 
 **TODO THINK OF WHAT HAPPENS IF THERE IS NOT ENOUGH STORAGE IN THE SERVER TO STORE THE FILES: WILL IT continue accepting the input? What will it do with the rest of the received input? will it throw it away? what will it do with the file it started writing in its memory? ALSO MEMORY COULD BE SUFFICIENT AT THE START OF THE REQUEST BUT COULD NOT BECOME SUFFICIENT AS THE DATA IS SENT, SO YOU HAVE TO SEND A NOT_SUFFICIENT_STORAGE MESSAGE IN THAT SITUATION, TOO, AND ELIMINATE THE FILES THAT WERE GENERATING TODO THINK OF WHAT HAPPENS IF THERE IS NOT ENOUGH STORAGE IN THE SERVER TO STORE THE FILES: WILL IT continue accepting the input? What will it do with the rest of the received input? will it throw it away? what will it do with the file it started writing in its memory?**
 **TODO I WANT TO USE BASE85 ENCODING TO TRANSMIT DATA, UPDATE DOC AND IMPLEMENT**
+**TODO PROTECT FROM USERS TRYING TO ACCESS FOLDERS THAT ARE NOT THEIRS**
 <br>
 **TODO REFACTOR AUTHORIZATIONLEVEL WITH A BOOLEAN ISADMIN**
 # ServerPhone
@@ -58,29 +59,28 @@ raw-data-length;header-title:header-body|raw-data
 The raw-data-length information is used to differentiate between message and message, so that it reads up to the message's length and that's the data.
 <br>**TODO WHAT IT HAS TO BE KEPT IN A `BigInteger` BECAUSE INT IS LIMITED TO 2 BILLION, WHICH IN BYTES IS 2 GIGS: BUG**<br>
 There can be only a header, and it has to have its their title match one of the titles' names specified by the [`HeaderTitle`](ServerTelefono/src/fredver/ioutils/HeaderTitle.java) enum. No field can ever not have a value, the default "non-value" is "null", as defined in [`Constants.NULL_VALUE`](ServerTelefono/src/fredver/constants/Constants.java)<br>
-In the raw data section, there may be situations where it is needed
+Each message it is sent in mind with the fact that the user is currently in a specific directory, so, for example, if a message with [`LIST_FILES_AND_DIRECTORIES`](ServerTelefono/src/fredver/ioutils/HeaderTitle.java) header is sent, then it will list all the files and directories in that specific directory.
 
-### Data format
+### Data format in receiving and sending files
 if the server or the client are communicating raw file data, base85 encoding of the files data is used. Why? Because sending raw data does not leave free characters to use as delimiters to differentiate between the different files' data and filenames, when transmitting multiple of them with the same message. Then why not Base64? Because it adds padding, and this has the consequence that it will not be distinguishable from actual data, because it flows like a stream from one socket to the other. You obviously cannot load into memory the file in its whole to transmit it so that the server can load it all into memory and then revert it back to normal encoding, because that puts a memory burden that could not be supported by either the client or the server. Base85, also, reduces the space occupied by data, so that it is faster to transmit via sockets. This is the same optimization result of having a bigger buffer.
 
 ### Header titles
 Here is a comprehensive table with all possible values header titles values, as defined in [`HeaderTitle`](ServerTelefono/src/fredver/ioutils/HeaderTitle.java), and how they are used based on if the server or client sends it.
 <br> **TODO UPDATE the table updating and completing** 
-There can be various answers in the body, they are all in [fredver.ioutils.Header](ServerTelefono/src/fredver/ioutils/Header.java) and are called `HEADER_BODY_*` where * can be anything, apart from [[`NULL_VALUE`](ServerTelefono/src/fredver/constants/Constants.java), in [fredver.constants.NULL_VALUE](ServerTelefono/src/fredver/constants/Constants.java),
-
+There can be various answers in the body, they are all in [fredver.ioutils.Header](ServerTelefono/src/fredver/ioutils/Header.java) and are called `HEADER_BODY_*` where * can be anything, apart from [[`NULL_VALUE`](ServerTelefono/src/fredver/constants/Constants.java), in [fredver.constants.NULL_VALUE](ServerTelefono/src/fredver/constants/Constants.java).
 
 |------|If client sends it|if server sends it|
 |:---:|:--- |:--- |
 ||**`LIST_FILES_AND_DIRECTORIES`**|**`LIST_FILES_AND_DIRECTORIES`**|
-|Header body:|The directory name to list the files of|It is a response from this same request from the client.<br>Possible values:<br>-`HEADER_BODY_GRANTED`<br>-`HEADER_BODY_NOT_ENOUGH_STORAGE`<br>-`HEADER_BODY_NOT_AUTHORIZED`<br>-`HEADER_BODY_NON_EXISTENT_FOLDER`<br>-<br>`HEADER_BODY_INVALID_RAW_DATA_LENGTH`|
+|Header body:|The directory name to list the files of|It is a response from this same request from the client.<br>Possible values:<br>-`HEADER_BODY_GRANTED`<br>-`HEADER_BODY_INVALID_RAW_DATA_LENGTH`|
 |Raw data:|NULL_VALUE|if granted:<br>-The names of the files and directories, separated by [`Constants.FILENAME_AND_FILENAME_SEPARATOR`](ServerTelefono/src/fredver/constants/Constants.java)<br><br>else:<br>-`NULL_VALUE`|
 |---|---|---|
 ||**`GET_FILE_OR_FOLDER`**|**`GET_FILE_OR_FOLDER`**|
-|Header body:|The directory or file name to get the files of|It is a response from this same request from the client.<br>Possible values:<br>-`HEADER_BODY_GRANTED`<br>-`HEADER_BODY_NOT_AUTHORIZED`<br>-`HEADER_BODY_NON_EXISTENT_FOLDER`<br>-`HEADER_BODY_INVALID_RAW_DATA_LENGTH`|
+|Header body:|The directory or file name to get the files of|It is a response from this same request from the client.<br>Possible values:<br>-`HEADER_BODY_GRANTED`<br>-`HEADER_BODY_INVALID_RAW_DATA_LENGTH`|
 |Raw data:|NULL_VALUE|if granted:<br>-The data of the specified file or folder<br><br>else:<br>-NULL_VALUE|
 |---|---|---|
 ||**`PUBLISH_FILE_OR_FOLDER`**|**`PUBLISH_FILE_OR_FOLDER`**|
-|Header body:||It is a response from this same request from the client.<br>Possible values:<br>-|
+|Header body:||It is a response from this same request from the client.<br>Possible values:<br>-`HEADER_BODY_GRANTED`<br>-`HEADER_BODY_NOT_ENOUGH_STORAGE`<br>-<br>`HEADER_BODY_INVALID_RAW_DATA_LENGTH`|
 |Raw data:|||
 |---|---|---|
 ||**`NEW_TLS_CERTIFICATE`**|**`NEW_TLS_CERTIFICATE`**|
