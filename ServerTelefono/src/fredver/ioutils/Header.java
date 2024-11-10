@@ -17,6 +17,9 @@ public class Header {
 	public static final String HEADER_BODY_RMDIR = "RMDIR";
 	public static final String HEADER_BODY_DEL = "DEL";
 	
+	public static final String HEADER_BODY_ASK_CURRENT_PATH = "ASK_CURRENT_PATH";
+	public static final String HEADER_BODY_ASK_ALLOCATED_STORAGE_TO_THIS_USER = "ASK_ALLOCATED_STORAGE_TO_THIS_USER";
+	
 	/**
 	 * 
 	 * @param headerTitle The title of the header
