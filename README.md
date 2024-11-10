@@ -58,9 +58,9 @@ To have a formal definition of what is a valid message, it has to match this reg
 ```
 ^([a-fA-F0-9]{32})-([0-9]{1,3});([^;:\|]{1,50}):([^;:\|]{1,4096})\|(.+)$
 ```
-Which represents none other than a string structured like this:
+Which represents none other than a string structured like this: **TODO THERE IS A BETTER WAY TO DO THIS. SEE "TCP HEADER FORMAT" IMAGES ON THE INTERNET**
 ```
-(this is a 32 character hexadecimal UUID)-(1 to three numbers, but not zero or any lea);(1 to 50 characters of header title):(1 to 4096 character of header body)|(whatever length of raw data)
+(this is a 32 character hexadecimal UUID)-(1 to three numbers, but not zero or any leangth);(1 to 50 characters of header title):(1 to 4096 character of header body)|(whatever length of raw data)
 ```
 
 Each message is identified by a UUID, that, if to send the message it is:
