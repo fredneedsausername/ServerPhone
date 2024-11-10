@@ -23,7 +23,7 @@ import javax.net.ssl.SSLServerSocketFactory;
 public class Server {
 	
 	private static Scanner terminalScanner = new Scanner(System.in);
-	private static boolean isServerStarted = false;
+	private static boolean isServerStarted = false; // represents if the server is turned on or off
 	private static SSLServerSocket serverSocket;
 	private static Set<SSLSocket> connections = new HashSet<>();
 	
@@ -31,7 +31,7 @@ public class Server {
 		 administrationConsole();	
 	}
 	
-	private static void print(String message) {
+	private static void print(String message) { // to simplify code
 		System.out.println(message);
 	}
 	

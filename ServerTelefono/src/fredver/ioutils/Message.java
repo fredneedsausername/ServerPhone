@@ -15,16 +15,13 @@ public class Message {
 	}
 	
 	public Message(String message) throws CheckedIllegalArgumentException { 
-		WRITE THIS METHOD		
+		WRITE THIS METHOD
+		CALL isMessageValid to check if the message is valid
 	}
 	
 	public static boolean isMessageValid(String message) {
         String regex = "^([^;]+);([^:]+):([^|]+)\\|(.+)$";
-        
-        return Pattern
-        		.compile(regex)
-        		.matcher(message)
-        		.matches();
+        return message.matches(regex);
     }
 	
 	@Override
