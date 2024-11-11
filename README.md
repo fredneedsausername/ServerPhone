@@ -1,6 +1,6 @@
 
 > [!WARNING]
-> Documentation is only partly completed, there might be changes to existing parts and surely new things will be added, especially those marked with **TODO
+> Documentation is only partly completed, there might be changes to existing parts and surely new things will be added, especially those marked with **TODO**
 
 # List of TODOs
 
