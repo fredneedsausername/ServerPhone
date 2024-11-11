@@ -1,25 +1,43 @@
 
 > [!WARNING]
-> Documentation is only partly completed, there might be changes to existing parts and surely new things will be added, especially those marked with **TODO**
+> Documentation is only partly completed, there might be changes to existing parts and surely new things will be added, especially those marked with **TODO
+
+# CIAO MASSEI
 
 # List of TODOs
+
 For your pleasure, here is a list of todos:<br>
-**TODO FIGURE OUT HOW TO BUILD THE PROJECT ON A DIFFERENT DEVICE**
+
 <br>
 <br>
+
+## TODOs of implementation
+
+- **TODO FIGURE OUT HOW TO BUILD THE PROJECT ON A DIFFERENT DEVICE**
+- **TODO change Source folder's name from "servertelefono" to "serverphone"
+
+### Setting up the server
+- **TODO Understand termux and how to optimize the device to use it.**
+- **TODO install git and deploy the server code to termux and run the jar file**
 
 ### Console
 - **TODO: IMPLEMENT ON THE CONSOLE a way to generate a new certificate**
 - **TODO ADD A WAY FOR THE SERVER AND CLIENT TO PROCESS AND SEND A MESSAGE.**
 - **TODO ADD A WAY TO NAVIGATE THROUGH FILES WITH A CLIENT**
 - **TODO ADD, FOR THE ADMIN, TO SEE HOW MUCH MEMORY IS ALLOCATED TO A USER**
+- **TODO IMPLEMENT ALL SERVER CONSOLE FUNCTIONS**
+
 <br>
 <br>
 
+## TODOs of documentation and studying anmd understanding project's nature
+
 ### Concurrecy
-- **TODO FIGURE OUT HOW TO DO SYNCHRONIZED CONCURRENCY**
-<br>
-<br>
+- **TODO UNDERSTAND FILE STREAMS AND FILE LOCK**
+- **TODO UNDERSTAND HOW SOCKET STREAMS WORK**
+
+
+
 
 ### Files and storage
 - **TODO IMPLEMENT a way to limit the storage of a user**
@@ -30,7 +48,8 @@ For your pleasure, here is a list of todos:<br>
 - **TODO TO KEEP THE ACTIVE MAP OF CLIENTS AND THEIR KEYS, USE A THREAD SAFE IMPLEMENTATION OF MAP**
 - **CONSIDER THAT YOU CANNOT CALCULATE HOW MUCH STORAGE IS BEING USED BY SERVER BY HOW MUCH STORAGE IS ALLOCATED, BECAUSE THERE ARE SITUATIONS WHERE LESS IS ALLOCATED THAN WHAT IS OCCUPIED**
 - **TODO MANAGE INSTALLATION OF SERVER**
-- 
+- **TODO UNDERSTAND HOW FILE STREAMS WORK**
+
 <br>
 <br>
 
