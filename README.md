@@ -12,7 +12,7 @@ For your pleasure, here is a list of todos:<br>
 ## TODOs of implementation
 
 - **TODO FIGURE OUT HOW TO BUILD THE PROJECT ON A DIFFERENT DEVICE**
-- **TODO change Source folder's name from "servertelefono" to "serverphone"
+- **TODO change Source folder's name from "servertelefono" to "serverphone"**
 
 ### Setting up the server
 - **TODO Understand termux and how to optimize the device to use it.**
