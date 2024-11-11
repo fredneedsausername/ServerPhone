@@ -7,6 +7,7 @@
 For your pleasure, here is a list of todos:<br>
 
 **TODO CONTINUE WRITING TODOs**
+**TODO ADD A HEADER AT THE START OF THE README FILE WITH A LEGEND OF ALL THE SECTIONS**
 <br>
 <br>
 
@@ -14,6 +15,7 @@ For your pleasure, here is a list of todos:<br>
 
 - **TODO FIGURE OUT HOW TO BUILD THE PROJECT ON A DIFFERENT DEVICE**
 - **TODO change Source folder's name from "servertelefono" to "serverphone"**
+- **TODO MAYBE ADD A SECTION TO TALK ABOUT JAVADOC**
 
 ### Setting up the server
 - **TODO Understand termux and how to optimize the device to use it.**
@@ -27,27 +29,23 @@ For your pleasure, here is a list of todos:<br>
 - **TODO IMPLEMENT ALL SERVER CONSOLE FUNCTIONS**
 
 ### Files and storage
-- **TODO IMPLEMENT a way to limit the storage of a user**
-- **TODO List_files_and_directories deve funzionare sulla cartella in cui si è ora, non su una cartella specificata**
-- **TODO GIVE 5MB OF STORAGE OR SOME OTHER SMALL AMOUNT TO THE SERVER FOLDER, SO THAT IT CAN KEEP ALL INFO ABOUT THE USERS, AND THE CERTIFICATE**
 - **TODO If the storage to accept the received data becomes insufficient during the receiving operation, send a message (TODO: IMPLEMENT THIS) to say that the storage is not enough, then start discarding all characters until you reach MESSAGE_END_SEPARATOR, that is a new message**
 - **TODO ALSO MEMORY COULD BE SUFFICIENT AT THE START OF THE REQUEST BUT COULD NOT BECOME SUFFICIENT AS THE DATA IS SENT, SO YOU HAVE TO SEND A NOT_SUFFICIENT_STORAGE MESSAGE IN THAT SITUATION, TOO, AND ELIMINATE THE FILES THAT WERE GENERATING**
 - **TODO TO KEEP THE ACTIVE MAP OF CLIENTS AND THEIR KEYS, USE A THREAD SAFE IMPLEMENTATION OF MAP**
 - **CONSIDER THAT YOU CANNOT CALCULATE HOW MUCH STORAGE IS BEING USED BY SERVER BY HOW MUCH STORAGE IS ALLOCATED, BECAUSE THERE ARE SITUATIONS WHERE LESS IS ALLOCATED THAN WHAT IS OCCUPIED**
 - **TODO MANAGE INSTALLATION OF SERVER**
+- **TODO IMPLEMENT THAT YOU CANNOT ALLOCATE MORE STORAGE TO A USER THAN WHAT THE DISK HAS AVAILABLE, CONSIDERING THE STORAGE OCCUPIED (NOT ALLOCATED, BUT OCCUPUIED, BECAUSE OCCUPIED CAN BE MORE THAN WHAT IS ALLOCATED) BY OTHER USERS?**
 
 ### User management
 - **TODO REFACTOR AUTHORIZATIONLEVEL WITH A BOOLEAN ISADMIN**
+- **TODO IF AT ANY TIME A USER DISCONNECTS ABRUPTLY IT HAS TO BE REMOVED FROM THE LIST OF ACTIVE CONNECTIONS**
 
 ### Protocol
 - **TODO IMPLEMENTATION AND DOCUMENTATIOM TO HAVE A REGEX WHERE ALL FIELDS OF THE HEADER ARE SEPARATED BY |**
 
 ### Protocol
-- **TODO IMPLEMENT AS FOLLOWS: the raw data length HAS TO BE KEPT IN A `BigInteger` BECAUSE INT IS LIMITED TO 2 BILLION, WHICH IN BYTES IS 2 GIGS: BUG**
-- **TODO ENSURE THE SENT KEY ON FIRST CONNECTION IS OF THE CORRECT FORMAT**
+- **TODO CREATE ERROR_CODE HEADER TITLE, TO SPECIFY ERRORS THAT THE SERVER INITIATES**
 - **TODO IMPLEMENT CERTIFICATES**
-- **TODO I WANT TO USE BASE85 ENCODING TO TRANSMIT DATA, IMPLEMENT**
-- **TODO IMPLEMENTATION TO HAVE A REGEX WHERE ALL FIELDS OF THE HEADER ARE SEPARATED BY |**
 
 <br>
 <br>
@@ -59,7 +57,14 @@ For your pleasure, here is a list of todos:<br>
 - **TODO UNDERSTAND HOW SOCKET STREAMS WORK**
   
 ### Protocol
-- **TODO DOCUMENTATION TO HAVE A REGEX WHERE ALL FIELDS OF THE HEADER ARE SEPARATED BY |**
+- **TODO ADD DOCUMENTATION ON HOW TO BUILD PROJECT**
+- **TODO PUT MORE INFORMATION ABOUT THE TYPE OF PUBLIC AND PRIVATE KEY**
+- **TODO ADD MESSAGE HEADER TO REMOTELY ACCESS THE CONSOLE**
+- **FIGURE OUT WHAT HAPPENS IF THE CLIENT SENDS A SERIES OF MESSAGES WITH THE SAME UUID IN SEQUENCE, FOR EXAMPLE TO UPLOAD VERY LARGE FILES**
+
+
+### Files and storage
+- **TODO WHAT HAPPENS IF AN ADMINISTRATOR TRIES TO WRITE ON A USER's FOLDER, AND EXCEEDS THE DATA LIMIT IMPOSED? WHAT HAPPENS IF IT DOESN't SURPASS THE DATA LIMIT IMPOSED, BUT THE DATA LIMIT THE STORAGE UNIT THE SERVER IS ON?** 
 <br>
 <br>
 <br>
@@ -75,8 +80,11 @@ This project supports full JavaDoc documentation, so feel free to consult it.<br
 The documention in this file is comprehensive and aims to have enough detail, so that one could run with it and make their own implementation.<br>
 If something is unclear, please do feel free to contribute in any way you see fit.
 
+## Building the project
+The server is installed in the folder where the executable is located. To start up the server from another location please use a shortcut. Here it will keep information about its users, and the data.
+
 ## Purpose
-This client/server application is a media server and a passion project, which aims to repurpose an old phone to act as a cloud (i know it's not technically a cloud because it's not distributed) for myself. This doesn't spawn from a practical need of such a device, but rather from a craving for an applied project, and this seems to be the coolest project i could come up with.
+This client/server application is a full duplex file cloud (not distributed, but single server) that implements a custom protocol communicating data with sockets and encrypting it using a public/private key as certificate and encryption method. It is a passion project, which aims to repurpose an old phone to act as a cloud (not distributed, but single server) for myself. This doesn't spawn from a practical need of such a device, but rather to give myself a project to work on.
 <br>
 <br>
 <br>
@@ -84,11 +92,11 @@ This client/server application is a media server and a passion project, which ai
 # Implementation
 
 ## Connection
-To ensure a connection doesn't stay open after an abrupt crash from the other side, a timeout (`setSoTimeout()`) of [`Constants.READ_TIMEOUT`](ServerTelefono/src/fredver/constants/Constants.java) milliseconds is set to the reading `Socket`. To keep the connection alive, a heartbeat with an interval of [`Constants.HEATBEAT_INTERVAL`](ServerTelefono/src/fredver/constants/Constants.java) milliseconds is set
+To ensure a connection doesn't stay open after an abrupt crash from the other side, a timeout (`setSoTimeout()`) of [`READ_TIMEOUT`](ServerTelefono/src/fredver/constants/Constants.java) milliseconds is set to the reading `Socket`. To keep the connection alive, a heartbeat with an interval of [`HEATBEAT_INTERVAL`](ServerTelefono/src/fredver/constants/Constants.java) milliseconds is set.
 <br>
 <br>
 ## Security
-I use `Socket` to ensure a secure communication, the server using an implementation of a self-signed certificate, so you have to know the server administrator and ask him to give you the certificate verification information. This is to protect the server from eavesdropping and MITM attacks, making all connections private. No need for a `SSLSocket`, since endpoint encryption in implemented manually in the certificate itself, which is simply a public/private key pair. See the [First connection](#first-connection) section<br>
+I use `Socket` to ensure a secure communication, the server uses an implementation of a self-signed certificate, which is simply a public/private key pair, the server keeps the private key, the public key is given by the server administrator and manually set up in the client. This is to protect the server from eavesdropping and MITM attacks, making all connections private. No need for a `SSLSocket`, since endpoint encryption is implemented with the keys. See the [First connection](#first-connection) section<br>
 <br>
 I don't even want to think about implementing a defense against DDoS attacks, and that is mainly for these reasons:
   - It requires cutting edge implementations of complex technologies, out of the bugdget of this project;
@@ -98,60 +106,58 @@ To make a server generate a new certificate, a message with header title [`NEW_C
 <br>
 <br>
 
-## Installation
-The server is installed in the folder where the executable is located. To start up the server from another location please use a shortcut. Here it will keep information about its users, and the data.
-
 ## Custom protocol
-In [fredver.ioutils](ServerTelefono/src/fredver/ioutils) package there is the implementation of the classes used for my own protocol.
+In the [fredver.ioutils](ServerTelefono/src/fredver/ioutils) package there is the implementation of the classes and enums used to implement my own protocol.
 
 ### First connection
 On first connection of the client with the server, a session key pair is generated by the client, and stored for use during that session.
 Then:
-  1. A message with header title [`PUBLIC_KEY`](ServerTelefono/src/fredver/ioutils/HeaderTitle.java) is sent using the already known server's public key for encryption, and the header body is the public key of the client (See the [Header titles](#header-titles) section) for the server to use by encrypting messages
-  2. The server reads the message, takes the `PUBLIC_KEY`, and stores it in its map of public keys associated with socket connections.
+  1. A message with header title [`PUBLIC_KEY`](ServerTelefono/src/fredver/ioutils/HeaderTitle.java) is sent by the client, encrypting it using the already known server's public key, where the header body is the public key of the client (See the [Header titles](#header-titles) section) for the server to use by encrypting messages
+  2. The server receives the message, creates a new socket to manage the connection, and puts it in its map that associates socket connections with the public keys of those connections, without specifying the public key section, leaving it null, for now at least.
+  3. The server reads the message, and, if the public key format is valid, then:
+     - it takes the public key, and stores it in its map that associates socket connections with the public keys of those connections, putting it as the value of the map's entry of the sender of the public key's socket connection.
 
 Now the server and the client have established a secure bridge of connection that protects them from eavesdropping and MITM attacks.
 
 ### Structure 
 To have a formal definition of what is a valid message, it has to match this regex:
 ```
-^([a-fA-F0-9]{32});([0-9]{1,15});([^;]{1,50});([^;]{1,4096});(.+)$
+^([a-fA-F0-9]{32})\|([0-9]{1,15})\|([^|]{1,50})\|([^|]{1,4096})\|(.+)$
 ```
 
-Which represents none other than a string structured, in the order the fields appear, separated by the [`MESSAGE_HEADER_FIELDS_SEPARATOR`](ServerTelefono/src/fredver/constants/Constants.java), like this: 
+Which represents none other than a string structured, in the order the fields appear in the following table, all separated by the [`MESSAGE_HEADER_FIELDS_SEPARATOR`](ServerTelefono/src/fredver/constants/Constants.java). 
 |Field name|Represented information's type|Represented information's size|Description|
 |---|---|---|---|
-|UUID|Hexadecimal string|Exactly 32 characters|An UUID of the message, for the server to respond to exact requests, by putting as the message's UUID the one of the client's request.|
-|Raw data length|Number|1 to 15 digits|To indicate the size of the raw data section of the message, used to determine if there is enough storage to hold a file or folder before sending|
+|UUID|Hexadecimal string|Exactly 32 characters|An UUID of the message. The client generates it, the server echoes the one of the client's request it is responding to|
+|Raw data length|Number|1 to 15 digits|Used to indicate the size of the raw data section of the message, used to determine if there is enough storage to hold a file or folder and send an alert message to the client if there is not enough storage, and has no other purpose|
 |Header title|String|1 to 50 characters|To indicate the nature of the message, choosing from header titles as specified in the [`HeaderTitle`](ServerTelefono/src/fredver/ioutils/HeaderTitle.java) enum|
-|Header body|String|1 to 4096 characters|To specify information about what the message is about. Example: if the header title was `PATH_OPERATION`, then the header body could be [`HEADER_BODY_RMDIR`](ServerTelefono/src/fredver/ioutils/Header.java)|
-|Raw data|Base85 encoded byte stream|The maximum number of bytes representable with the maximum number of digits of the field "Raw data length"|To send raw data through the connection, as all other communication, like metadata, is done in the header|
+|Header body|String|1 to 4096 characters|To specify information about what the header title is about. Example: if the header title was `PATH_OPERATION`, then the header body could be [`HEADER_BODY_RMDIR`](ServerTelefono/src/fredver/ioutils/Header.java)|
+|Raw data|Base85 encoded byte stream|The maximum number of bytes representable with the maximum number of digits of the field "Raw data length"|To send raw data through the connection, because all other communication information, for example the metadata, is put in the header|
 
 A message ends and a new one starts when [`MESSAGE_END_SEPARATOR`](ServerTelefono/src/fredver/constants/Constants.java) is reached. It is not put in the valid message's regex because the raw data can be several gigabytes of data, and it obviously won't be sent all at once, so in some cases there's no way to establish whether there is a message ending character or not.<br>
 <br>
 The header body is of a maximum of 4096 characters because that's the max path of linux, and the header body is used, at its max length, to represent file paths.<br>
-<br>
-The raw-data-length information is used to know immediately upon sending a message if the server has enough storage to save the file. It serves no other purpose.<br>
+
 
 <br>
 <br>
 
-There can be only a header, and it has to have its their title match one of the titles' names specified by the [`HeaderTitle`](ServerTelefono/src/fredver/ioutils/HeaderTitle.java) enum. No field can ever not have a value, the default "non-value" is "null", as defined in [`Constants.NULL_VALUE`](ServerTelefono/src/fredver/constants/Constants.java).
+There can be only a header, and it has to have its their title match one of the titles' names specified by the [`HeaderTitle`](ServerTelefono/src/fredver/ioutils/HeaderTitle.java) enum. No field can ever not have a value, the default "non-value" is "null", as defined
+by [`NULL_VALUE`](ServerTelefono/src/fredver/constants/Constants.java).
 Each message it is sent in mind with the fact that the user is currently in a specific directory, so, for example, if a message with [`LIST_FILES_AND_DIRECTORIES`](ServerTelefono/src/fredver/ioutils/HeaderTitle.java) header is sent, then it will list all the files and directories in that specific directory.
-HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 
 ### Encoding of raw data
 
-When the server or the client are communicating raw data, base85 encoding of the files data is used.<br>
-Why? Because sending raw data does not leave free characters to use as delimiters to differentiate between the different files' data and filenames, when transmitting multiple of them with the same message.<br>
+When the server or the client are communicating raw data, base85 encoding of the files data is used. For the header, no encoding is used.<br>
+Why is encoding used in the raw data section? Because sending raw data does not leave free characters to use as delimiters to differentiate between the different files' data and filenames, when transmitting multiple of them with the same message.<br>
 <br>
 Then why not Base64?<br>
-Because it adds padding (`=` characters) if encoded bytes are not a multiple of `3`, and this has the consequence that it will not be distinguishable from actual data, because it flows like a stream from one socket to the other.<br>To avoid the padding's creation, you obviously cannot load into memory the file in its whole to transmit it so that the server can load it all into memory and then revert it back to normal encoding, because that puts a memory burden that could not be supported by either the client or the server.<br>
-Base85, also, reduces the space occupied by data, so that it is faster to transmit via sockets. This is the same optimization result of having a bigger buffer. <br> **
+Because it adds padding (`=` characters) if encoded bytes are not a multiple of `3`, and this has the consequence that it will not be distinguishable from actual data, because it flows like a stream from one socket to the other.<br>To avoid the padding's creation, you would have to load the whole file to send into memory, then encode it, so that the server has load it all into memory and then revert it back to normal encoding. That is obviously not possible, as large files could be sent over the network, and for the server to load the whole message into memory to decode it would require too much ram.<br>
+Base85, also, reduces the space occupied by data, so that it is faster to transmit via sockets.<br>
 <br>
-File data, or data of multiple files, is structured inside the raw data section as per the folllowing explanation:
-  - The file name and data are separated by the constant [`fredver.constants.Constants.FILE_NAME_AND_FILE_DATA_SEPARATOR`](ServerTelefono/src/fredver/constants/Constants.java), which is not a value encoded by base85 encoding
-  - A file's data and the next file's name are separated by the constant[`fredver.constants.FILE_DATA_AND_NEXT_FILE_NAME_SEPARATOR`](ServerTelefono/src/fredver/constants/Constants.java), which is not a value encoded by base85 encoding.
+The data of one or multiple files, is structured inside the raw data section as per the folllowing explanation:
+  - The file name and data are separated by the constant [`FILE_NAME_AND_FILE_DATA_SEPARATOR`](ServerTelefono/src/fredver/constants/Constants.java), which is not a value produced by base85 encoding.
+  - A file's data and the next file's name are separated by the constant[`FILE_DATA_AND_NEXT_FILE_NAME_SEPARATOR`](ServerTelefono/src/fredver/constants/Constants.java), which is not a value produced by base85 encoding.
 
 <br>
 
@@ -171,12 +177,12 @@ There can be various answers in the body, they can be those defined in [fredver.
 |Raw data:|`NULL_VALUE`|if granted:<br>-The data of the specified file or folder as specified in the [Receiving and sending files](#receiving-and-sending-files) section<br><br>else:<br>-`NULL_VALUE`|
 |---|---|---|
 ||**`PUBLISH_FILE_OR_FOLDER`**|**`PUBLISH_FILE_OR_FOLDER`**|
-|Header body:|Folder name if there are multiple files and folders, File name otherwise|It is a response from this same request from the client.<br>Possible values:<br>-`HEADER_BODY_GRANTED`<br>-`HEADER_BODY_NOT_ENOUGH_STORAGE`<br>-`HEADER_BODY_INVALID_HEADER_FORMAT`<br>-`HEADER_BODY_NOT_AUTHORIZED`|
+|Header body:|The published file or folder's desired name to have in the server's file system|It is a response from this same request from the client.<br>Possible values:<br>-`HEADER_BODY_GRANTED`<br>-`HEADER_BODY_NOT_ENOUGH_STORAGE`<br>-`HEADER_BODY_INVALID_HEADER_FORMAT`<br>-`HEADER_BODY_NOT_AUTHORIZED`|
 |Raw data:|The data of the files and folders to publish, as specified in the [Receiving and sending files](#receiving-and-sending-files) section|`NULL_VALUE`|
 |---|---|---|
 ||**`NEW_CERTIFICATE`**|**`NEW_CERTIFICATE`**|
 |Header body:|`NULL_VALUE`|Possible values:<br>-`HEADER_BODY_GRANTED`<br>-`HEADER_BODY_NOT_AUTHORIZED`<br>-`HEADER_BODY_INVALID_HEADER_FORMAT`|
-|Raw data:|`NULL_VALUE`|If granted:<br>-The new certificate<br><br>else:<br>-`NULL_VALUE`|
+|Raw data:|`NULL_VALUE`|If granted:<br>-The new certificate's data (see the [Security](#security) section)<br><br>else:<br>-`NULL_VALUE`|
 |---|---|---|
 ||**`PATH_OPERATION`**|**`PATH_OPERATION`**|
 |Header body:|The operation to be executed.<br>Possible values:<br>-`HEADER_BODY_CD`<br>-`HEADER_BODY_RMDIR`<br>-`HEADER_BODY_DEL`|It is a response from this same request.<br>Possible values:<br>-`HEADER_BODY_INVALID_HEADER_FORMAT`<br>-`HEADER_BODY_GRANTED`<br>-`HEADER_BODY_NOT_AUTHORIZED`<br>`HEADER_BODY_NON_EXISTENT_FOLDER`|
@@ -213,27 +219,29 @@ The console can run in offline mode, but has to be specified at startup. In this
 
 ## Client
 The client is able to:
-- to connect to the server specifying its ip address and port, with a functionality to save those info for later reuse, and change them to a different one.
-- access the console if it is an admin, otherwise a specific menu based on its authorization level. See [`fredver.clientserver.PermissionLevel`](ServerTelefono/src/fredver/clientserver/PermissionLevel.java) enum.
-- change or set up a new certificate of the server and get it.
-- based on its certification level:
-  - navigate through the folders 
-  - get files and directories
-  - upload files and directories
-  - create files and directories
+- To connect to the server specifying its ip address and port, with a functionality to save those info for later reuse, and change them to a different one.
+- Access the console if it is an admin
+- Change or set up a new certificate of the server and get it.
+- On its dedicated folder:
+  - Navigate through the folders 
+  - Get files and directories
+  - Upload files and directories
+  - Create files and directories
 
 <br>
 <br>
 
 ## Storage
-Each user will have its partition, a folder with their name as name of the folder. If, for any operation, storage is not enough, it will delete the data that was writing.
+Each user will have its partition, a folder with their name as name of the folder. If, for any writing operation, storage is not enough, it will delete the data that was writing, and a message with ERROR_CODE title and HEADER_BODY_NOT_ENOUGH_STORAGE body is sent to the client.<br>
+
+- **TODO GIVE 5MB OF STORAGE OR SOME OTHER SMALL AMOUNT TO THE SERVER FOLDER, SO THAT IT CAN KEEP ALL INFO ABOUT THE USERS, AND THE CERTIFICATE**
 
 <br>
 <br>
 
 ## User management
 **TODO**
-There may be multiple users, each having their dedicated folder under the users folder. Each user has a password and username, which they have to use to connect to the server. Each user has their access level, from the defined ones in [fredver.clientserver.PermissionLevel](ServerTelefono/src/fredver/clientserver/PermissionLevel.java) enum. Each user can only interact with the contents of its user folder, unless it's the admin.<br>
+There may be multiple users, each having their dedicated folder under the users folder. Each user has a password and username, which they have to use to connect to the server. Each user has their access level, specified as a boolean isAdministrator, in the file with name the string defined by [`SERVER_USERS_INFO_NAME`](ServerTelefono/src/fredver/constants/Constants.java). Each user can only interact with the contents of its user folder, unless it's the admin.<br>
 The admin can set a limit, which is ***highly recommended***, of how much storage a user has allocated to himself (his folder). 
 
 <br>
@@ -242,7 +250,7 @@ The admin can set a limit, which is ***highly recommended***, of how much storag
 
 ## Concurrency
 >[!WARNING]
-Just in case there is a bug, always keep at least two users with the maximum permissions if you plan on using the server remotely, since if one connection, for some reason, is not closed properly, at least with the other one you can restart the server and not lose access.
+Just in case there is a bug, always keep at least two users with the maximum permissions if you plan on using the server remotely, since if one connection, for some reason, is not closed properly, at least with the other one you can restart the server and not lose access, since if the server thinks that you (the main admin account) are connected it won't let you connect again.
 
 This is ***very*** important to keep the synchronization, the same user can only have one active connection with the server, ***not more***.
 Only one client can connect to the server with a specific user, so only one instance of the same user can be connected to the server at the same time. If more try to connect the server simply refuses from the second request onward, and does not accept new logins until the active connection is terminated. 
