@@ -2,6 +2,10 @@ package fredver.ioutils;
 
 import fredver.errorhandling.CheckedIllegalArgumentException;
 
+/**
+ * Class to represent the header part of the message, along with some header body's constants.
+ * @see Documentation: "Custom protocol" section in https://github.com/fredneedsausername/ServerPhone/edit/master/README.md
+ */
 public class Header {
 	
 	private String body;
@@ -28,11 +32,16 @@ public class Header {
 	 * create a header with no type) or if the body is an empty string {@code ""} because it can
 	 * be null to represent an empty value but cannot be an empty string
 	 */
-	public Header(HeaderTitle headerTitle, String body) throws CheckedIllegalArgumentException {
+	ADD PARAMETER TO SET THE RAW DATA LENGTH AND
+	TO SET THE UUID
+	public Header(HeaderTitle headerTitle, String body) throws CheckedIllegalArgumentException { 
 		if(headerTitle == null) 
 			throw new CheckedIllegalArgumentException("Request type of value null when initializing Header class instance");
 		if(body == "")
 			throw new CheckedIllegalArgumentException("Content of empty value when initializing Header class instance");
+		ADD CHECK TO VALIDATE RAW DATA LENGTH
+		ADD CHECK TO VALIDATE UUID
+		CHECK IF HEADER BODY EXISTS
 		this.body = body;
 		this.headerTitle = headerTitle;
 	}
@@ -52,5 +61,7 @@ public class Header {
 	public HeaderTitle getTitle() {
 		return headerTitle;
 	}
+	
+	
 		
 }

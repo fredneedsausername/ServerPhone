@@ -1,5 +1,8 @@
 package fredver.constants;
 
+/**
+ * The constants used through the whole server.
+ */
 public class Constants {
 
 	public static final int SERVER_PORT_NUMBER = 48484;
@@ -9,7 +12,6 @@ public class Constants {
 	public static final int UUID_LENGTH = 32; // 32 hexadecimal numbers
 	public static final int MAX_PATH = 4096; // max linux path length, which has the longest max path length
 	public static final int DEFAULT_SERVER_FOLDER_SIZE = 5 * 1024 * 1024; // 5MBs to keep all the user info, keys, and other server stuff
-	public static final int FILE_DISCARDING_TIMEOUT = 120_000;
 	
 	public static final char FILE_NAME_AND_FILE_DATA_SEPARATOR = '{'; // not used in base85 encoding, which is used to send data of file names and data
 	public static final char ALLOCATED_STORAGE_INFORMATION_SEPARATOR = '{';

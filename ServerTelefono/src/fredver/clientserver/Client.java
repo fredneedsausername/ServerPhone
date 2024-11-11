@@ -9,8 +9,16 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+/**
+ * The class to manage a client.
+ * @see Documentation: "Client" section in: https://github.com/fredneedsausername/ServerPhone/edit/master/README.md
+ */
 public class Client {
 	
+	/**
+	 * Used internally to prompt the user to insert the socket's address (ip and port) into the terminal
+	 * @return The validated socket's address inserted by the user
+	 */
 	private static InetSocketAddress askSocketAddress() {
 		
 		boolean successfulServerConnection = false;
@@ -79,6 +87,12 @@ public class Client {
 		return new InetSocketAddress(ia, serverPortInt);
 	}
 	
+	/**
+	 * 
+	 * @param serverAddress The address of the server to connect to
+	 * @return A new socket, connected to the address by the parameter
+	 * @throws IOException If there is a problem connecting to the server
+	 */
 	private static Socket connectToServer(InetSocketAddress serverAddress) throws IOException {
 		Socket s = new Socket();
 		s.connect(serverAddress);

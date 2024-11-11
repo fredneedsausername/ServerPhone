@@ -1,9 +1,12 @@
 package fredver.test.message;
 
+/**
+ * A simple class used in testing to verify that the valid message parsing regex is correct
+ */
 public class MessageStructureTest {
 
 	public static void main(String[] args) {
-		String regex = "^([a-fA-F0-9]{32});([0-9]{1,15});([^;]{1,50});([^;]{1,4096});(.+)$";
+		String regex = "^([a-fA-F0-9]{32})\\|([0-9]{1,15})\\|([^|]{1,50})\\|([^|]{1,4096})$";
 		
 		// all strings not hexadecimal and digit
 		String test1 = "hello-test;hello:lol|hehe";
@@ -11,8 +14,8 @@ public class MessageStructureTest {
 		
 		// correct format
 		String test3 = "aaabbbcccaaabbbcccaaabbbcccaaabb-001;LOLOLOLOLOLO:POPOPOPOPOPO|KOKOKOKOKO";
-		String test4 = "aaabbbcccaaabbbcccaaabbbcccaaabb-010;LOLOLOLOLOLO:POPOPOPOPOPO|KOKOKOKOKO";
-		String test5 = "aaabbbcccaaabbbcccaaabbbcccaaabb-111;LOLOLOLOLOLO:POPOPOPOPOPO|KOKOKOKOKO";
+		String test4 = "aaabbbcccaaabbbcccaaabbbcccaaabb|010|LOLOLOLOLOLO|POPOPOPOPOPO";
+		String test5 = "aaabbbcccaaabbbcccaaabbbcccaaabb-111;LOLOLOLOLOLO:POPOPOPOPOPO";
 		
 		// correct format with leading or up to 2 trailing zeros
 		String test6 = "aaabbbcccaaabbbcccaaabbbcccaaabb;11100;LOLOLOLOLOLO;POPOPOPOPOPO;KOKOKOKOKO";
