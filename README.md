@@ -25,31 +25,21 @@ For your pleasure, here is a list of todos:<br>
 - **TODO ADD, FOR THE ADMIN, TO SEE HOW MUCH MEMORY IS ALLOCATED TO A USER**
 - **TODO IMPLEMENT ALL SERVER CONSOLE FUNCTIONS**
 
-<br>
-<br>
-
-## TODOs of documentation and studying anmd understanding project's nature
-
-### Concurrecy
-- **TODO UNDERSTAND FILE STREAMS AND FILE LOCK**
-- **TODO UNDERSTAND HOW SOCKET STREAMS WORK**
-
-
-
-
 ### Files and storage
 - **TODO IMPLEMENT a way to limit the storage of a user**
 - **TODO List_files_and_directories deve funzionare sulla cartella in cui si è ora, non su una cartella specificata**
 - **TODO GIVE 5MB OF STORAGE OR SOME OTHER SMALL AMOUNT TO THE SERVER FOLDER, SO THAT IT CAN KEEP ALL INFO ABOUT THE USERS, AND THE CERTIFICATE**
-- **TODO If the storage to accept the received data becomes insufficient during the receiving operation, send a message (TODO: IMPLEMENT THIS) to say that the storage is not enough, then start a timer of FILE_DISCARDING_TIMEOUT milliseconds, start discarding all characters until you reach MESSAGE_END_SEPARATOR, if you don't reach it in time for the timer to expire then close the connection with the client who sent the file too big. This is to protect from attackers sending a file too big, then not sending the message ending character but sending random junk data to keep the connection alive**
+- **TODO If the storage to accept the received data becomes insufficient during the receiving operation, send a message (TODO: IMPLEMENT THIS) to say that the storage is not enough, then start discarding all characters until you reach MESSAGE_END_SEPARATOR, that is a new message**
 - **TODO ALSO MEMORY COULD BE SUFFICIENT AT THE START OF THE REQUEST BUT COULD NOT BECOME SUFFICIENT AS THE DATA IS SENT, SO YOU HAVE TO SEND A NOT_SUFFICIENT_STORAGE MESSAGE IN THAT SITUATION, TOO, AND ELIMINATE THE FILES THAT WERE GENERATING**
 - **TODO TO KEEP THE ACTIVE MAP OF CLIENTS AND THEIR KEYS, USE A THREAD SAFE IMPLEMENTATION OF MAP**
 - **CONSIDER THAT YOU CANNOT CALCULATE HOW MUCH STORAGE IS BEING USED BY SERVER BY HOW MUCH STORAGE IS ALLOCATED, BECAUSE THERE ARE SITUATIONS WHERE LESS IS ALLOCATED THAN WHAT IS OCCUPIED**
 - **TODO MANAGE INSTALLATION OF SERVER**
-- **TODO UNDERSTAND HOW FILE STREAMS WORK**
 
-<br>
-<br>
+### User management
+- **TODO REFACTOR AUTHORIZATIONLEVEL WITH A BOOLEAN ISADMIN**
+
+### Protocol
+- **TODO IMPLEMENTATION AND DOCUMENTATIOM TO HAVE A REGEX WHERE ALL FIELDS OF THE HEADER ARE SEPARATED BY |**
 
 ### Protocol
 - **TODO IMPLEMENT AS FOLLOWS: the raw data length HAS TO BE KEPT IN A `BigInteger` BECAUSE INT IS LIMITED TO 2 BILLION, WHICH IN BYTES IS 2 GIGS: BUG**
@@ -58,12 +48,17 @@ For your pleasure, here is a list of todos:<br>
 - **TODO I WANT TO USE BASE85 ENCODING TO TRANSMIT DATA, IMPLEMENT**
 - **TODO IMPLEMENTATION TO HAVE A REGEX WHERE ALL FIELDS OF THE HEADER ARE SEPARATED BY |**
 
-
 <br>
 <br>
 
-### User management
-- **TODO REFACTOR AUTHORIZATIONLEVEL WITH A BOOLEAN ISADMIN**
+## TODOs of documentation and studying anmd understanding project's nature
+
+### Concurrecy
+- **TODO UNDERSTAND FILE STREAMS AND FILE LOCK**
+- **TODO UNDERSTAND HOW SOCKET STREAMS WORK**
+  
+### Protocol
+- **TODO DOCUMENTATION TO HAVE A REGEX WHERE ALL FIELDS OF THE HEADER ARE SEPARATED BY |**
 <br>
 <br>
 <br>
