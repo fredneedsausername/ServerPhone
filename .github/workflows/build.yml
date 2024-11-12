@@ -51,7 +51,7 @@ jobs:
       # Step 8: Push changes
       - name: Push changes
         env:
-          REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
+          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git remote set-url origin https://${REPO_TOKEN}@github.com/${{ github.repository }}
           git push origin master
