@@ -1,0 +1,43 @@
+name: Compile Installer Class
+
+on:
+  push:
+    branches:
+      - master  # Trigger the workflow on pushes to the main branch
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Step 2: Set up Java JDK
+      - name: Set up JDK 8
+        uses: actions/setup-java@v3
+        with:
+          java-version: '8'
+
+      # Step 3: Create a build directory
+      - name: Create build directory
+        run: mkdir -p installer
+
+      # Step 4: Compile the specific Main class
+      - name: Compile Installer class
+        run: javac -d installer src/fredver.clientserver/Installer.java
+
+      # Step 5: Package the compiled Main class into a JAR file
+      - name: Create JAR file
+        run: jar cfe installer/installer.jar fredver.clientserver.Installer -C installer .
+
+      # Step 6: Upload the JAR file as an artifact (optional)
+      - name: Upload JAR as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: installer
+          path: installer/installer.jar
