@@ -34,11 +34,20 @@ jobs:
 
       # Step 5: Package the compiled Main class into a JAR file
       - name: Create JAR file
-        run: jar cfe installer/installer.jar fredver/clientserver/Installer -C installer .
+        run: jar cfe installer/installer.jar fredver.clientserver.Installer -C installer .
 
-      # Step 6: Upload the JAR file as an artifact (optional)
-      - name: Upload JAR as artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: installer
-          path: installer/installer.jar
+      # Step 6: Commit and push the JAR file back to the repository
+      - name: Configure git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+      - name: Commit JAR file
+        run: |
+          git add installer/installer.jar
+          git commit -m "Add compiled installer.jar"
+      - name: Push changes
+        env:
+          REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
+        run: |
+          git remote set-url origin https://${REPO_TOKEN}@github.com/${{ github.repository }}
+          git push origin master
