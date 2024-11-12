@@ -30,11 +30,11 @@ jobs:
 
       # Step 4: Compile the specific Main class
       - name: Compile Installer class
-        run: javac -d installer src/fredver.clientserver/Installer.java
+        run: javac -d installer src/fredver/clientserver/Installer.java
 
       # Step 5: Package the compiled Main class into a JAR file
       - name: Create JAR file
-        run: jar cfe installer/installer.jar fredver.clientserver.Installer -C installer .
+        run: jar cfe installer/installer.jar fredver/clientserver/Installer -C installer .
 
       # Step 6: Upload the JAR file as an artifact (optional)
       - name: Upload JAR as artifact
