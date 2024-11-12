@@ -37,7 +37,7 @@ jobs:
 
       # Step 6: Upload the JAR file as an artifact (optional)
       - name: Upload JAR as artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: installer
           path: installer/installer.jar
