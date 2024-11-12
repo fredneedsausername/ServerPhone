@@ -12,6 +12,7 @@
 |GENERAL TODOS|GENERAL TODOS|
 |write tests and start understanding how junit works|10|
 |Spell check and final revision|1|
+|Update gitignore to make it so that the bin folder is ignored|10|
 |use junit|10|
 |---|---|
 |TODOs of implementation|TODOs of implementation|
