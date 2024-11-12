@@ -36,15 +36,19 @@ jobs:
       - name: Create JAR file
         run: jar cfe installer/installer.jar fredver.clientserver.Installer -C installer .
 
-      # Step 6: Commit and push the JAR file back to the repository
+      # Step 6: Configure git
       - name: Configure git
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      # Step 7: Force add and commit the JAR file
       - name: Commit JAR file
         run: |
-          git add installer/installer.jar
+          git add -f installer/installer.jar
           git commit -m "Add compiled installer.jar"
+
+      # Step 8: Push changes
       - name: Push changes
         env:
           REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
