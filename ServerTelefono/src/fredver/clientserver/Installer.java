@@ -5,6 +5,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 
+/**
+ * The main class of the application, that installs it in the preferred directory
+ */
 public class Installer {
 
 	/**
@@ -12,69 +15,101 @@ public class Installer {
 	 * @param args Unused
 	 */
 	public static void main(String[] args) {
-        @SuppressWarnings("resource")
-		Scanner scanner = new Scanner(System.in);
-
+		
         String os = System.getProperty("os.name").toLowerCase();
         boolean isWindows = os.contains("win");
         boolean isMac = os.contains("mac");
         boolean isLinux = os.contains("nix") || os.contains("nux");
 
         if (!isWindows && !isMac && !isLinux) {
-            System.out.println("Unsupported operating system. Exiting installer.");
+            System.out.println("Detected operating system not Windows, MacOS, or linux");
+            System.out.println("only these operating systems are supported");
+            System.out.println("exiting program...");
             return;
         }
-
-        System.out.println("Enter the installation directory where client/server JARs will be saved:");
-        String installDirPath = scanner.nextLine();
-        File installDir = new File(installDirPath);
-
-        if (!installDir.exists()) {
-            if (!installDir.mkdirs()) {
-                System.out.println("Failed to create installation directory. Please check permissions and try again.");
-                return;
-            }
-        } else if (!installDir.isDirectory()) {
-            System.out.println("The specified path is not a directory. Exiting installer.");
-            return;
-        }
-
-        int choice = 0;
-        boolean validChoice = false;
-
-        while (!validChoice) {
-            System.out.println("Select installation option:");
-            System.out.println("1: Install Client only");
-            System.out.println("2: Install Server only");
-            System.out.println("3: Install both Client and Server");
-
-            try {
-                choice = Integer.parseInt(scanner.nextLine());
-
-                if (choice >= 1 && choice <= 3) {
-                    validChoice = true;
-                } else {
-                    System.out.println("Invalid choice. Please enter 1, 2, or 3.");
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid input. Please enter a number (1, 2, or 3).");
-            }
-        }
+        
+        File installDir = askInstallDir();
+        
+        int installationType = askInstallationType();
 
         try {
+        	File scriptFile = null;
             if (isWindows) {
-                File scriptFile = generateWindowsScript(installDir, choice);
-                executeScript(scriptFile);
+                scriptFile = generateWindowsScript(installDir, installationType);
             } else if (isMac || isLinux) {
-                File scriptFile = generateUnixScript(installDir, choice);
-                executeScript(scriptFile);
+                scriptFile = generateUnixScript(installDir, installationType);
             }
-            System.out.println("Installation script created and executed successfully in " + installDir.getAbsolutePath());
+            executeScript(scriptFile);
+            System.out.println("Installation completed successfully");
+            System.out.println("Closing installation program...");
+            return;
         } catch (IOException e) {
-            System.out.println("Error writing or executing the build script: " + e.getMessage());
+        	System.out.println("For the installation a temporary script is created and executed");
+            System.out.println("There was an error writing or executing the build script: " + e.getMessage());
         }
     }
 	
+	/**
+     * Used internally to ask the installation directory inside the main function
+     * @return The File object representing the directory
+     */
+    private static File askInstallDir() {
+    	@SuppressWarnings("resource")
+		Scanner scanner = new Scanner(System.in);
+    	
+    	while(true) {
+        	System.out.println("Enter the installation directory where client/server JARs will be saved:");
+            String installDirPath = scanner.nextLine();
+            File installDir = new File(installDirPath);
+            
+            if (!installDir.exists()) {
+        		if (!installDir.mkdirs()) {
+        			System.out.println("Failed to create installation directory");
+        			System.out.println("Path only created partially");
+        			System.out.println("Check permissions and try again");
+        			continue;
+                }
+            } else if (!installDir.isDirectory()) {
+                System.out.println("The specified path is not a directory");
+                System.out.println("Path created but not target folder");
+                System.out.println("Try again");
+                continue;
+            }
+            return installDir;
+        }
+    }
+
+    /**
+     * Used internally to ask the type of installation (client, server, or both) inside the main function
+     * @return the code for installation. 1:client<br>2:server<br>3:both
+     */
+    private static int askInstallationType() {
+    	
+    	@SuppressWarnings("resource")
+		Scanner scanner = new Scanner(System.in);
+    	int choice = 0;
+        while (true) {
+            System.out.println("Select installation option:");
+            System.out.println("1: client");
+            System.out.println("2: server");
+            System.out.println("3: both");
+
+            try {
+                choice = Integer.parseInt(scanner.nextLine());
+                if ( (choice == 1) || (choice == 2) || (choice == 3) ) {
+                    return choice;
+                } else {
+                    System.out.println("Invalid input");
+                    System.out.println("Please try again");
+                    continue;
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Not a number");
+                continue;
+            }
+        }
+    }
+    
     /**
      * Generates a self-destructing script for windows users that installs the requested jar files
      * @param installDir The directory to install to
@@ -86,10 +121,10 @@ public class Installer {
     private static File generateWindowsScript(File installDir, int choice) throws IOException {
         StringBuilder scriptContent = new StringBuilder();
         scriptContent.append("@echo off\n")
-                .append("set REPO_URL=https://github.com/yourusername/yourproject.git\n")
+                .append("set REPO_URL=https://github.com/fredneedsausername/ServerPhone.git\n")
                 .append("echo Cloning the repository...\n")
                 .append("git clone %REPO_URL%\n")
-                .append("cd yourproject || exit /b\n")
+                .append("cd ServerPhone || exit /b\n")
                 .append("echo Running Maven build...\n")
                 .append("mvn clean package\n")
                 .append("echo Build completed.\n");
@@ -110,6 +145,7 @@ public class Installer {
         writeFile(scriptFile, scriptContent.toString());
         return scriptFile;
     }
+
     
     /**
      * Generates a self-destructing script for unix users that installs the requested jar files
@@ -122,10 +158,10 @@ public class Installer {
     private static File generateUnixScript(File installDir, int choice) throws IOException {
         StringBuilder scriptContent = new StringBuilder();
         scriptContent.append("#!/bin/bash\n")
-                .append("REPO_URL=https://github.com/yourusername/yourproject.git\n")
+                .append("REPO_URL=https://github.com/fredneedsausername/ServerPhone.git\n")
                 .append("echo \"Cloning the repository...\"\n")
                 .append("git clone \"$REPO_URL\"\n")
-                .append("cd yourproject || exit\n")
+                .append("cd ServerPhone || exit\n")
                 .append("echo \"Running Maven build...\"\n")
                 .append("mvn clean package\n")
                 .append("echo \"Build completed.\"\n");
