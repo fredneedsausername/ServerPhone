@@ -2,74 +2,67 @@
 > [!WARNING]
 > Documentation is only partly completed, there might be changes to existing parts and surely new things will be added, especially those marked with **TODO**
 
-# TEST BABBO
+**THE SERVER SHOULD NOT CHECK FOR THE INTEGRITY OF ITS OWN CONFIG FILES, SINCE THE SERVER IS NEVER AT FAULT**
+**THE PRIORITY FOR TODOS OF DOCUMENTATION IS 10
 
-# List of TODOs
+# Table of TODOs 
 
-For your pleasure, here is a list of todos:<br>
-
-**TODO CONTINUE WRITING TODOs**
-**TODO ADD A HEADER AT THE START OF THE README FILE WITH A LEGEND OF ALL THE SECTIONS**
-<br>
-<br>
-
-## TODOs of implementation
-
-- **TODO FIGURE OUT HOW TO BUILD THE PROJECT ON A DIFFERENT DEVICE**
-- **TODO change Source folder's name from "servertelefono" to "serverphone"**
-- **TODO MAYBE ADD A SECTION TO TALK ABOUT JAVADOC**
-
-### Setting up the server
-- **TODO Understand termux and how to optimize the device to use it.**
-- **TODO install git and deploy the server code to termux and run the jar file**
-
-### Console
-- **TODO: IMPLEMENT ON THE CONSOLE a way to generate a new certificate**
-- **TODO ADD A WAY FOR THE SERVER AND CLIENT TO PROCESS AND SEND A MESSAGE.**
-- **TODO ADD A WAY TO NAVIGATE THROUGH FILES WITH A CLIENT**
-- **TODO ADD, FOR THE ADMIN, TO SEE HOW MUCH MEMORY IS ALLOCATED TO A USER**
-- **TODO IMPLEMENT ALL SERVER CONSOLE FUNCTIONS**
-
-### Files and storage
-- **TODO If the storage to accept the received data becomes insufficient during the receiving operation, send a message (TODO: IMPLEMENT THIS) to say that the storage is not enough, then start discarding all characters until you reach MESSAGE_END_SEPARATOR, that is a new message**
-- **TODO ALSO MEMORY COULD BE SUFFICIENT AT THE START OF THE REQUEST BUT COULD NOT BECOME SUFFICIENT AS THE DATA IS SENT, SO YOU HAVE TO SEND A NOT_SUFFICIENT_STORAGE MESSAGE IN THAT SITUATION, TOO, AND ELIMINATE THE FILES THAT WERE GENERATING**
-- **TODO TO KEEP THE ACTIVE MAP OF CLIENTS AND THEIR KEYS, USE A THREAD SAFE IMPLEMENTATION OF MAP**
-- **CONSIDER THAT YOU CANNOT CALCULATE HOW MUCH STORAGE IS BEING USED BY SERVER BY HOW MUCH STORAGE IS ALLOCATED, BECAUSE THERE ARE SITUATIONS WHERE LESS IS ALLOCATED THAN WHAT IS OCCUPIED**
-- **TODO MANAGE INSTALLATION OF SERVER**
-- **TODO IMPLEMENT THAT YOU CANNOT ALLOCATE MORE STORAGE TO A USER THAN WHAT THE DISK HAS AVAILABLE, CONSIDERING THE STORAGE OCCUPIED (NOT ALLOCATED, BUT OCCUPUIED, BECAUSE OCCUPIED CAN BE MORE THAN WHAT IS ALLOCATED) BY OTHER USERS?**
-
-### User management
-- **TODO REFACTOR AUTHORIZATIONLEVEL WITH A BOOLEAN ISADMIN**
-- **TODO IF AT ANY TIME A USER DISCONNECTS ABRUPTLY IT HAS TO BE REMOVED FROM THE LIST OF ACTIVE CONNECTIONS**
-
-### Protocol
-- **TODO IMPLEMENTATION AND DOCUMENTATIOM TO HAVE A REGEX WHERE ALL FIELDS OF THE HEADER ARE SEPARATED BY |**
-
-### Protocol
-- **TODO CREATE ERROR_CODE HEADER TITLE, TO SPECIFY ERRORS THAT THE SERVER INITIATES**
-- **TODO IMPLEMENT CERTIFICATES**
-
-<br>
-<br>
-
-## TODOs of documentation and studying anmd understanding project's nature
-
-### Concurrecy
-- **TODO UNDERSTAND FILE STREAMS AND FILE LOCK**
-- **TODO UNDERSTAND HOW SOCKET STREAMS WORK**
-  
-### Protocol
-- **TODO ADD DOCUMENTATION ON HOW TO BUILD PROJECT**
-- **TODO PUT MORE INFORMATION ABOUT THE TYPE OF PUBLIC AND PRIVATE KEY**
-- **TODO ADD MESSAGE HEADER TO REMOTELY ACCESS THE CONSOLE**
-- **FIGURE OUT WHAT HAPPENS IF THE CLIENT SENDS A SERIES OF MESSAGES WITH THE SAME UUID IN SEQUENCE, FOR EXAMPLE TO UPLOAD VERY LARGE FILES**
-
-
-### Files and storage
-- **TODO WHAT HAPPENS IF AN ADMINISTRATOR TRIES TO WRITE ON A USER's FOLDER, AND EXCEEDS THE DATA LIMIT IMPOSED? WHAT HAPPENS IF IT DOESN't SURPASS THE DATA LIMIT IMPOSED, BUT THE DATA LIMIT THE STORAGE UNIT THE SERVER IS ON?** 
-<br>
-<br>
-<br>
+|TODO DESCRIPTION|TODO PRIORITY (1 least, 10 most)|
+|:--|:--|
+|GENERAL TODOS|GENERAL TODOS|
+|write tests and start understanding how junit works|10|
+|Spell check and final revision|1|
+|use junit|10|
+|---|---|
+|TODOs of implementation|TODOs of implementation|
+|---|---|
+|**TODO FIGURE OUT HOW TO USE MAVEN TO BUILD THE JAR FILE OF THE INSTALLER CLASS**|9|
+|**TODO change Source folder's name from "servertelefono" to "serverphone"**|1|
+|**TODO MAYBE ADD A SECTION TO TALK ABOUT JAVADOC**|10|
+|Setting up the server|Setting up the server|
+|---|---|
+|**TODO Understand termux and how to optimize the device to use it.**|2|
+|**TODO install git and deploy the server code to termux and run the jar file and test it**|2|
+|Document how the installer works|10|
+|Console|Console|
+|---|---|
+|**TODO: IMPLEMENT ON THE CONSOLE a way to generate a new certificate**|6|
+|**TODO ADD A WAY FOR THE SERVER AND CLIENT TO PROCESS AND SEND A MESSAGE.**|6|
+|**TODO ADD A WAY TO NAVIGATE THROUGH FILES WITH A CLIENT**|6|
+|**TODO ADD, FOR THE ADMIN, TO SEE HOW MUCH MEMORY IS ALLOCATED TO A USER**|5|
+|**TODO IMPLEMENT ALL SERVER CONSOLE FUNCTIONS**|7|
+|Files and storage|Files and storage|
+|---|---|
+|**TODO If the storage to accept the received data becomes insufficient during the receiving operation, send a message (TODO: IMPLEMENT THIS) to say that the storage is not enough, then start discarding all characters until you reach MESSAGE_END_SEPARATOR, that is a new message**|3|
+|**TODO ALSO MEMORY COULD BE SUFFICIENT AT THE START OF THE REQUEST BUT COULD NOT BECOME SUFFICIENT AS THE DATA IS SENT, SO YOU HAVE TO SEND A NOT_SUFFICIENT_STORAGE MESSAGE IN THAT SITUATION, TOO, AND ELIMINATE THE FILES THAT WERE GENERATING**|3|
+|**TODO TO KEEP THE ACTIVE MAP OF CLIENTS AND THEIR KEYS, USE A THREAD SAFE IMPLEMENTATION OF MAP**|9|
+|**CONSIDER THAT YOU CANNOT CALCULATE HOW MUCH STORAGE IS BEING USED BY SERVER BY HOW MUCH STORAGE IS ALLOCATED, BECAUSE THERE ARE SITUATIONS WHERE LESS IS ALLOCATED THAN WHAT IS OCCUPIED**|10 (it is a problem of documentation, you have to understand how to deal with this situation, then the implementation will have a low todo score)|
+|**TODO Document that more storage can be allocated than what is on disk, but that if it becomes insufficient then the writing operation stops and the data that was being written will begin to be eliminated**|10|
+|User management|User management|
+|---|---|
+|**TODO REFACTOR AUTHORIZATIONLEVEL WITH A BOOLEAN ISADMIN**|6 Along with implementation of client|
+|**TODO IF AT ANY TIME A USER DISCONNECTS ABRUPTLY IT HAS TO BE REMOVED FROM THE LIST OF ACTIVE CONNECTIONS**|5|
+|Protocol|Protocol|
+|---|---|
+|make it so that the header is of a fixed length|10|
+|**TODO IMPLEMENTATION AND DOCUMENTATIOM TO HAVE A REGEX WHERE ALL FIELDS OF THE HEADER ARE SEPARATED BY \|**|10|
+|**TODO CREATE ERROR_CODE HEADER TITLE, TO SPECIFY ERRORS THAT THE SERVER INITIATES**|when it becomes useful, for now i put it at 8|
+**TODO IMPLEMENT CERTIFICATES**|3|
+|TODOs of documentation and studying anmd understanding project's nature|TODOs of documentation and studying anmd understanding project's nature|
+|---|---|
+|Concurrecy|Concurrecy|
+|---|---|
+|**TODO UNDERSTAND FILE STREAMS AND FILE LOCK**|7|
+|**TODO UNDERSTAND HOW SOCKET STREAMS WORK**|8|
+|Protocol|Protocol|
+|---|---|
+|**TODO ADD DOCUMENTATION ON HOW TO BUILD PROJECT**|10|
+|**TODO PUT MORE INFORMATION ABOUT THE TYPE OF PUBLIC AND PRIVATE KEY**|10|
+|**TODO ADD MESSAGE HEADER TO REMOTELY ACCESS THE CONSOLE**|10|
+|**FIGURE OUT WHAT HAPPENS IF THE CLIENT SENDS A SERIES OF MESSAGES WITH THE SAME UUID IN SEQUENCE, FOR EXAMPLE TO UPLOAD VERY LARGE FILES. SOLUTION IF THE SERVER SEES THAT A MESSAGE HAS A REPEATED UUID, IT SENDS AN ERROR CODE TO THE CLIENT. IF THE CLIENT WAS IN GOOD FAITH, IT WILL USE IT TO KNOW THAT THIS HAPPENED ACCIDENTALY, AN INCREDIBLE RARE OCCURRENCE, AND WILL RE-SEND THE MESSAGE WITH A NEW CODE. IF THE USER WAS IN BAD FAITH, THEN THIS PROTECTS THE SERVER**|0 (do not implement this)|
+|Files and storage|Files and storage|
+|---|---|
+|**TODO WHAT HAPPENS IF AN ADMINISTRATOR TRIES TO WRITE ON A USER's FOLDER, AND EXCEEDS THE DATA LIMIT IMPOSED? WHAT HAPPENS IF IT DOESN't SURPASS THE DATA LIMIT IMPOSED, BUT THE DATA LIMIT THE STORAGE UNIT THE SERVER IS ON?**|10|
 
 # ServerPhone
 _Believe it or not, this is the third time i delete this repo because of configurations issues, which took me a day to sort out.<br>
