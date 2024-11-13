@@ -9,6 +9,9 @@
 # Maven build folder
 target/
 
+# Eclipse build folder
+bin/
+
 # Log file
 *.log
 
