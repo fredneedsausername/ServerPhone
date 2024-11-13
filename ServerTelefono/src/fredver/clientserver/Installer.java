@@ -119,31 +119,39 @@ public class Installer {
      * @return The File object representing the generated script
      */
     private static File generateWindowsScript(File installDir, int choice) throws IOException {
-        StringBuilder scriptContent = new StringBuilder();
-        scriptContent.append("@echo off\n")
-                .append("set REPO_URL=https://github.com/fredneedsausername/ServerPhone.git\n")
-                .append("echo Cloning the repository...\n")
-                .append("git clone %REPO_URL%\n")
-                .append("cd ServerPhone || exit /b\n")
-                .append("echo Running Maven build...\n")
-                .append("mvn clean package\n")
-                .append("echo Build completed.\n");
+    	StringBuilder scriptContent = new StringBuilder();
+    	scriptContent.append("@echo off\n")
+    	        .append("set REPO_URL=https://github.com/fredneedsausername/ServerPhone.git\n")
+    	        .append("echo Cloning the repository...\n")
+    	        .append("git clone %REPO_URL%\n")
+    	        .append("cd ServerPhone || exit /b\n")
+    	        .append("echo Running Maven build...\n")
+    	        .append("mvn clean package\n")
+    	        .append("echo Build completed.\n");
 
-        if (choice == 1 || choice == 3) {
-            scriptContent.append("copy target\\client.jar ").append(installDir.getAbsolutePath()).append("\\client.jar\n");
-        }
-        if (choice == 2 || choice == 3) {
-            scriptContent.append("copy target\\server.jar ").append(installDir.getAbsolutePath()).append("\\server.jar\n");
-        }
+    	// Copy executables to installDir
+    	if (choice == 1 || choice == 3) {
+    	    scriptContent.append("copy target\\client.jar ").append(installDir.getAbsolutePath()).append("\\client.jar\n");
+    	}
+    	if (choice == 2 || choice == 3) {
+    	    scriptContent.append("copy target\\server.jar ").append(installDir.getAbsolutePath()).append("\\server.jar\n");
+    	}
 
-        // Add self-delete commands
-        scriptContent.append("(echo @echo off\n")
-                .append("echo del \"%~f0\") > \"%temp%\\delete_self.bat\"\n")
-                .append("start \"\" /b \"%temp%\\delete_self.bat\"\n");
+    	// Add commands to delete the source code and repository files
+    	scriptContent.append("echo Removing source code and repository files...\n")
+    	        .append("cd ..\n") // Move back to the parent directory
+    	        .append("rmdir /s /q ServerPhone\n"); // Remove the cloned repository folder
 
-        File scriptFile = new File(installDir, "build.bat");
-        writeFile(scriptFile, scriptContent.toString());
-        return scriptFile;
+    	// Add self-delete commands
+    	scriptContent.append("(echo @echo off\n")
+    	        .append("echo del \"%~f0\") > \"%temp%\\delete_self.bat\"\n")
+    	        .append("start \"\" /b \"%temp%\\delete_self.bat\"\n");
+
+    	// Write the script file
+    	File scriptFile = new File(installDir, "build.bat");
+    	writeFile(scriptFile, scriptContent.toString());
+    	return scriptFile;
+
     }
 
     
@@ -156,30 +164,37 @@ public class Installer {
      * @return The File object representing the generated script
      */
     private static File generateUnixScript(File installDir, int choice) throws IOException {
-        StringBuilder scriptContent = new StringBuilder();
-        scriptContent.append("#!/bin/bash\n")
-                .append("REPO_URL=https://github.com/fredneedsausername/ServerPhone.git\n")
-                .append("echo \"Cloning the repository...\"\n")
-                .append("git clone \"$REPO_URL\"\n")
-                .append("cd ServerPhone || exit\n")
-                .append("echo \"Running Maven build...\"\n")
-                .append("mvn clean package\n")
-                .append("echo \"Build completed.\"\n");
+    	StringBuilder scriptContent = new StringBuilder();
+    	scriptContent.append("#!/bin/bash\n")
+    	        .append("REPO_URL=https://github.com/fredneedsausername/ServerPhone.git\n")
+    	        .append("echo \"Cloning the repository...\"\n")
+    	        .append("git clone \"$REPO_URL\"\n")
+    	        .append("cd ServerPhone || exit\n")
+    	        .append("echo \"Running Maven build...\"\n")
+    	        .append("mvn clean package\n")
+    	        .append("echo \"Build completed.\"\n");
 
-        if (choice == 1 || choice == 3) {
-            scriptContent.append("cp target/client.jar ").append(installDir.getAbsolutePath()).append("/client.jar\n");
-        }
-        if (choice == 2 || choice == 3) {
-            scriptContent.append("cp target/server.jar ").append(installDir.getAbsolutePath()).append("/server.jar\n");
-        }
+    	// Copy executables to installDir
+    	if (choice == 1 || choice == 3) {
+    	    scriptContent.append("cp target/client.jar ").append(installDir.getAbsolutePath()).append("/client.jar\n");
+    	}
+    	if (choice == 2 || choice == 3) {
+    	    scriptContent.append("cp target/server.jar ").append(installDir.getAbsolutePath()).append("/server.jar\n");
+    	}
 
-        // Add self-delete command
-        scriptContent.append("rm -- \"$0\"\n");
+    	// Add commands to delete source code and repository files
+    	scriptContent.append("echo \"Removing source code and repository files...\"\n")
+    	        .append("cd ..\n") // Go back to the parent directory
+    	        .append("rm -rf ServerPhone\n"); // Remove the cloned repository
 
-        File scriptFile = new File(installDir, "build.sh");
-        writeFile(scriptFile, scriptContent.toString());
-        scriptFile.setExecutable(true);  // Make executable
-        return scriptFile;
+    	// Add self-delete command
+    	scriptContent.append("rm -- \"$0\"\n");
+
+    	// Write the script file
+    	File scriptFile = new File(installDir, "build.sh");
+    	writeFile(scriptFile, scriptContent.toString());
+    	scriptFile.setExecutable(true); // Make executable
+    	return scriptFile;
     }
 
     /**
