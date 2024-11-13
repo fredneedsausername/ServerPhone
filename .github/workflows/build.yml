@@ -24,31 +24,27 @@ jobs:
           distribution: 'temurin'
           java-version: '8'
 
-      # Step 3: Create a build directory
-      - name: Create build directory
-        run: mkdir -p installer
-
-      # Step 4: Compile the specific Main class
+      # Step 3: Compile the specific Main class
       - name: Compile Installer class
-        run: javac -d installer ServerTelefono/src/fredver/clientserver/Installer.java
+        run: javac -d . ServerTelefono/src/fredver/clientserver/Installer.java
 
-      # Step 5: Package the compiled Main class into a JAR file
+      # Step 4: Package the compiled Main class into a JAR file
       - name: Create JAR file
-        run: jar cfe installer/installer.jar fredver.clientserver.Installer -C installer .
+        run: jar cfe installer.jar fredver.clientserver.Installer -C . fredver
 
-      # Step 6: Configure git
+      # Step 5: Configure git
       - name: Configure git
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-      # Step 7: Force add and commit the JAR file
+      # Step 6: Force add and commit the JAR file to the root directory
       - name: Commit JAR file
         run: |
-          git add -f installer/installer.jar
+          git add -f installer.jar
           git commit -m "Add compiled installer.jar"
 
-      # Step 8: Push changes
+      # Step 7: Push changes
       - name: Push changes
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
