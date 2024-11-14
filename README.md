@@ -1,6 +1,15 @@
 
+
+> [!CAUTION]
+> This project was aborted, in favor of a redesign now developed at
+
+
+
+
+
 > [!WARNING]
 > Documentation is only partly completed, there might be changes to existing parts and surely new things will be added, especially those marked with **TODO**
+
 
 **THE SERVER SHOULD NOT CHECK FOR THE INTEGRITY OF ITS OWN CONFIG FILES, SINCE THE SERVER IS NEVER AT FAULT**
 **THE PRIORITY FOR TODOS OF DOCUMENTATION IS 10
