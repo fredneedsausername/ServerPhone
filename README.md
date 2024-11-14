@@ -1,11 +1,40 @@
 
 
 > [!CAUTION]
-> This project was aborted, in favor of a redesign now developed at
+> This project was aborted, in favor of a redesign now developed at [https://github.com/fredneedsausername/WappCloud](https://github.com/fredneedsausername/WappCloud)
 
+> [!CAUTION]
+> This project was aborted, in favor of a redesign now developed at [https://github.com/fredneedsausername/WappCloud](https://github.com/fredneedsausername/WappCloud)
 
+> [!CAUTION]
+> This project was aborted, in favor of a redesign now developed at [https://github.com/fredneedsausername/WappCloud](https://github.com/fredneedsausername/WappCloud)
 
+> [!CAUTION]
+> This project was aborted, in favor of a redesign now developed at [https://github.com/fredneedsausername/WappCloud](https://github.com/fredneedsausername/WappCloud)
 
+> [!CAUTION]
+> This project was aborted, in favor of a redesign now developed at [https://github.com/fredneedsausername/WappCloud](https://github.com/fredneedsausername/WappCloud)
+
+> [!CAUTION]
+> This project was aborted, in favor of a redesign now developed at [https://github.com/fredneedsausername/WappCloud](https://github.com/fredneedsausername/WappCloud)
+
+> [!CAUTION]
+> This project was aborted, in favor of a redesign now developed at [https://github.com/fredneedsausername/WappCloud](https://github.com/fredneedsausername/WappCloud)
+
+> [!CAUTION]
+> This project was aborted, in favor of a redesign now developed at [https://github.com/fredneedsausername/WappCloud](https://github.com/fredneedsausername/WappCloud)
+
+> [!CAUTION]
+> This project was aborted, in favor of a redesign now developed at [https://github.com/fredneedsausername/WappCloud](https://github.com/fredneedsausername/WappCloud)
+
+> [!CAUTION]
+> This project was aborted, in favor of a redesign now developed at [https://github.com/fredneedsausername/WappCloud](https://github.com/fredneedsausername/WappCloud)
+
+> [!CAUTION]
+> This project was aborted, in favor of a redesign now developed at [https://github.com/fredneedsausername/WappCloud](https://github.com/fredneedsausername/WappCloud)
+
+> [!CAUTION]
+> This project was aborted, in favor of a redesign now developed at [https://github.com/fredneedsausername/WappCloud](https://github.com/fredneedsausername/WappCloud)
 
 > [!WARNING]
 > Documentation is only partly completed, there might be changes to existing parts and surely new things will be added, especially those marked with **TODO**
