@@ -13,24 +13,23 @@
 > [!CAUTION]
 > This project was aborted, in favor of another project with similar nature, with arduino.
 
+> [!CAUTION]
+> This project was aborted, in favor of another project with similar nature, with arduino.
+
+> [!CAUTION]
+> This project was aborted, in favor of another project with similar nature, with arduino.
+
+> [!CAUTION]
+> This project was aborted, in favor of another project with similar nature, with arduino.
+
+> [!CAUTION]
+> This project was aborted, in favor of another project with similar nature, with arduino.
+
+> [!CAUTION]
+> This project was aborted, in favor of another project with similar nature, with arduino.
+
 > [!WARNING]
 > Documentation is only partly completed, there might be changes to existing parts and surely new things will be added, especially those marked with **TODO**
-
-> [!CAUTION]
-> This project was aborted, in favor of another project with similar nature, with arduino.
-
-> [!CAUTION]
-> This project was aborted, in favor of another project with similar nature, with arduino.
-
-> [!CAUTION]
-> This project was aborted, in favor of another project with similar nature, with arduino.
-
-> [!CAUTION]
-> This project was aborted, in favor of another project with similar nature, with arduino.
-
-> [!CAUTION]
-> This project was aborted, in favor of another project with similar nature, with arduino.
-
 
 **THE SERVER SHOULD NOT CHECK FOR THE INTEGRITY OF ITS OWN CONFIG FILES, SINCE THE SERVER IS NEVER AT FAULT**
 **THE PRIORITY FOR TODOS OF DOCUMENTATION IS 10
